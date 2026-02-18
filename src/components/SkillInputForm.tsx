@@ -33,8 +33,31 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
   const [activeTab, setActiveTab] = useState<"skills" | "resume" | "upload">("skills");
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isParsing, setIsParsing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
 
   const addSkill = () => {
     const trimmed = skillInput.trim();
@@ -55,10 +78,12 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (file) processFile(file);
+  };
 
+  const processFile = async (file: File) => {
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
       toast({ title: "File too large", description: "Maximum file size is 10MB.", variant: "destructive" });
@@ -236,7 +261,12 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
 
       {/* Upload Resume */}
       {activeTab === "upload" && (
-        <div className="animate-fade-in-up space-y-4">
+        <div
+          className="animate-fade-in-up space-y-4"
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <input
             ref={fileInputRef}
             type="file"
@@ -289,12 +319,20 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
           ) : (
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-xl bg-secondary/50 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group"
+              className={`w-full flex flex-col items-center justify-center py-12 border-2 border-dashed rounded-xl transition-all cursor-pointer group ${
+                isDragging
+                  ? "border-primary bg-primary/10 scale-[1.02]"
+                  : "border-border bg-secondary/50 hover:border-primary/50 hover:bg-primary/5"
+              }`}
             >
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+              <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
+                isDragging ? "bg-primary/20" : "bg-primary/10 group-hover:bg-primary/20"
+              }`}>
                 <Upload className="h-7 w-7 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground mb-1">Drop your resume here or click to browse</p>
+              <p className="text-sm font-medium text-foreground mb-1">
+                {isDragging ? "Drop your resume here" : "Drag & drop your resume here, or click to browse"}
+              </p>
               <p className="text-xs text-muted-foreground">PDF, DOC, DOCX, TXT, or image — max 10MB</p>
             </button>
           )}
