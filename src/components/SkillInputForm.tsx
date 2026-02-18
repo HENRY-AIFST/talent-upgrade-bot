@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, FileText, Target, Sparkles, Loader2 } from "lucide-react";
+import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const POPULAR_ROLES = [
   "Full Stack Developer",
@@ -28,7 +30,11 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
   const [skillInput, setSkillInput] = useState("");
   const [targetRole, setTargetRole] = useState("");
   const [resumeText, setResumeText] = useState("");
-  const [activeTab, setActiveTab] = useState<"skills" | "resume">("skills");
+  const [activeTab, setActiveTab] = useState<"skills" | "resume" | "upload">("skills");
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [isParsing, setIsParsing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const addSkill = () => {
     const trimmed = skillInput.trim();
@@ -46,6 +52,81 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
     if (e.key === "Enter") {
       e.preventDefault();
       addSkill();
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Maximum file size is 10MB.", variant: "destructive" });
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = [
+      "application/pdf",
+      "text/plain",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "image/png",
+      "image/jpeg",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Unsupported file", description: "Please upload a PDF, TXT, DOC, DOCX, or image file.", variant: "destructive" });
+      return;
+    }
+
+    setIsParsing(true);
+    setUploadedFileName(file.name);
+
+    try {
+      // For plain text files, read directly
+      if (file.type === "text/plain") {
+        const text = await file.text();
+        setResumeText(text);
+        toast({ title: "Resume loaded", description: "Text extracted successfully." });
+        setIsParsing(false);
+        return;
+      }
+
+      // For PDF/DOC/images, send to AI for parsing
+      const arrayBuffer = await file.arrayBuffer();
+      const base64 = btoa(
+        new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), "")
+      );
+
+      const { data, error } = await supabase.functions.invoke("parse-resume", {
+        body: {
+          fileBase64: base64,
+          fileName: file.name,
+          mimeType: file.type,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      if (data?.text) {
+        setResumeText(data.text);
+        toast({ title: "Resume parsed!", description: `Extracted content from ${file.name}` });
+      } else {
+        throw new Error("No text extracted from resume");
+      }
+    } catch (err: any) {
+      console.error("Resume parse error:", err);
+      toast({
+        title: "Parse failed",
+        description: err.message || "Could not extract text from the resume. Try pasting the text manually.",
+        variant: "destructive",
+      });
+      setUploadedFileName("");
+    } finally {
+      setIsParsing(false);
+      // Reset file input
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -96,6 +177,17 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
           Add Skills
         </button>
         <button
+          onClick={() => setActiveTab("upload")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all ${
+            activeTab === "upload"
+              ? "bg-card text-foreground shadow-card"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Upload className="h-4 w-4" />
+          Upload Resume
+        </button>
+        <button
           onClick={() => setActiveTab("resume")}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all ${
             activeTab === "resume"
@@ -104,7 +196,7 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
           }`}
         >
           <FileText className="h-4 w-4" />
-          Paste Resume
+          Paste Text
         </button>
       </div>
 
@@ -142,7 +234,74 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
         </div>
       )}
 
-      {/* Resume Input */}
+      {/* Upload Resume */}
+      {activeTab === "upload" && (
+        <div className="animate-fade-in-up space-y-4">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+
+          {isParsing ? (
+            <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-xl bg-secondary/50">
+              <Loader2 className="h-10 w-10 text-primary animate-spin mb-3" />
+              <p className="text-sm font-medium text-foreground">Parsing your resume with AI...</p>
+              <p className="text-xs text-muted-foreground mt-1">{uploadedFileName}</p>
+            </div>
+          ) : resumeText && uploadedFileName ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-4 border border-primary/30 bg-primary/5 rounded-xl">
+                <CheckCircle className="h-5 w-5 text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{uploadedFileName}</p>
+                  <p className="text-xs text-muted-foreground">Resume parsed successfully</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setResumeText("");
+                    setUploadedFileName("");
+                  }}
+                  className="text-muted-foreground hover:text-destructive text-xs"
+                >
+                  Remove
+                </Button>
+              </div>
+              <div className="bg-secondary rounded-lg p-4 max-h-48 overflow-y-auto">
+                <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                  {resumeText.slice(0, 500)}{resumeText.length > 500 ? "..." : ""}
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="text-xs border-border text-muted-foreground"
+              >
+                <Upload className="h-3.5 w-3.5 mr-1.5" />
+                Upload Different File
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-xl bg-secondary/50 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group"
+            >
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <Upload className="h-7 w-7 text-primary" />
+              </div>
+              <p className="text-sm font-medium text-foreground mb-1">Drop your resume here or click to browse</p>
+              <p className="text-xs text-muted-foreground">PDF, DOC, DOCX, TXT, or image — max 10MB</p>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Paste Resume Text */}
       {activeTab === "resume" && (
         <div className="animate-fade-in-up">
           <Textarea
@@ -157,7 +316,7 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
       {/* Analyze Button */}
       <Button
         onClick={() => onAnalyze({ skills, targetRole, resumeText })}
-        disabled={!canSubmit || isLoading}
+        disabled={!canSubmit || isLoading || isParsing}
         className="w-full gradient-primary text-primary-foreground font-display font-semibold text-base py-6 hover:opacity-90 transition-opacity disabled:opacity-40 animate-pulse-glow"
       >
         {isLoading ? (

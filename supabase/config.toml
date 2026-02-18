@@ -2,3 +2,6 @@ project_id = "jwaeghinsunpalxnlupk"
 
 [functions.analyze-skills]
 verify_jwt = false
+
+[functions.parse-resume]
+verify_jwt = false
