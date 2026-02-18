@@ -86,10 +86,10 @@ const Index = () => {
       <div className="absolute inset-0 z-0">
         <Particles
           particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
-          particleCount={150}
+          particleCount={80}
           particleSpread={10}
-          speed={0.05}
-          particleBaseSize={80}
+          speed={0.03}
+          particleBaseSize={60}
           moveParticlesOnHover
           alphaParticles
           disableRotation={false}

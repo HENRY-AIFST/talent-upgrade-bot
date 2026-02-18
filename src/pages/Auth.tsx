@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Compass, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 import Particles from "@/components/Particles";
+import RotatingText from "@/components/RotatingText";
 import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
@@ -83,8 +84,22 @@ const Auth = () => {
             <Compass className="h-6 w-6 text-primary-foreground" />
           </div>
           <h1 className="font-display font-bold text-2xl text-foreground">SkillBridge</h1>
-          <p className="text-sm text-muted-foreground">
-            {showReset ? "Reset your password" : isLogin ? "Welcome back" : "Create your account"}
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5">
+            {showReset ? "Reset your password" : isLogin ? "Welcome back" : "Create your account to"}
+            {!showReset && (
+              <RotatingText
+                texts={['land your dream job', 'bridge skill gaps', 'ace interviews', 'grow your career']}
+                mainClassName="px-1.5 bg-primary text-primary-foreground overflow-hidden py-0.5 rounded-md text-sm"
+                staggerFrom="last"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "-120%" }}
+                staggerDuration={0.025}
+                splitLevelClassName="overflow-hidden pb-0.5"
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                rotationInterval={3000}
+              />
+            )}
           </p>
         </div>
 
