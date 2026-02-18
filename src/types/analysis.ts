@@ -19,8 +19,15 @@ export interface SkillGap {
 
 export interface Resource {
   name: string;
-  type: "course" | "tool" | "certification";
+  type: "course" | "tool" | "certification" | "youtube";
   url: string;
+}
+
+export interface YouTubePlaylist {
+  title: string;
+  url: string;
+  skill: string;
+  description: string;
 }
 
 export interface RoadmapPhase {
@@ -45,6 +52,7 @@ export interface AnalysisResult {
   skillGaps: SkillGap[];
   learningRoadmap: RoadmapPhase[];
   certifications: Certification[];
+  youtubePlaylist?: YouTubePlaylist[];
   timeline: {
     threeMonths: string;
     sixMonths: string;
