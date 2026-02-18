@@ -3,16 +3,17 @@ import SkillInputForm from "@/components/SkillInputForm";
 import AnalysisResults from "@/components/AnalysisResults";
 import AnalysisHistory from "@/components/AnalysisHistory";
 import RoleComparison from "@/components/RoleComparison";
+import ProgressTracker from "@/components/ProgressTracker";
 import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Compass, LogOut, User } from "lucide-react";
+import { Compass, LogOut, User, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 
-type View = "input" | "results" | "compare";
+type View = "input" | "results" | "compare" | "progress";
 
 const Index = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -89,6 +90,17 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setView("progress")}
+                className="text-muted-foreground hover:text-foreground text-xs"
+              >
+                <TrendingUp className="h-4 w-4 mr-1" />
+                Progress
+              </Button>
+            )}
             {user ? (
               <>
                 <span className="text-xs text-muted-foreground hidden sm:inline">{user.email}</span>
@@ -108,7 +120,9 @@ const Index = () => {
 
       {/* Main */}
       <main className="container max-w-5xl mx-auto px-4 py-8">
-        {view === "compare" ? (
+        {view === "progress" ? (
+          <ProgressTracker onBack={() => setView("input")} />
+        ) : view === "compare" ? (
           <RoleComparison analyses={compareData} onBack={() => setView("input")} />
         ) : view === "results" && result ? (
           <AnalysisResults result={result} onReset={() => { setView("input"); setResult(null); }} />

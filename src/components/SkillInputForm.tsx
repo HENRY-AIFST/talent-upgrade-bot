@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle } from "lucide-react";
+import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import LinkedInImport from "./LinkedInImport";
 
 const POPULAR_ROLES = [
   "Full Stack Developer",
@@ -30,7 +31,7 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
   const [skillInput, setSkillInput] = useState("");
   const [targetRole, setTargetRole] = useState("");
   const [resumeText, setResumeText] = useState("");
-  const [activeTab, setActiveTab] = useState<"skills" | "resume" | "upload">("skills");
+  const [activeTab, setActiveTab] = useState<"skills" | "resume" | "upload" | "linkedin">("skills");
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isParsing, setIsParsing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -223,6 +224,17 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
           <FileText className="h-4 w-4" />
           Paste Text
         </button>
+        <button
+          onClick={() => setActiveTab("linkedin")}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all ${
+            activeTab === "linkedin"
+              ? "bg-card text-foreground shadow-card"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Linkedin className="h-4 w-4" />
+          LinkedIn
+        </button>
       </div>
 
       {/* Skills Input */}
@@ -349,6 +361,17 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
             className="min-h-[200px] bg-secondary border-border text-foreground placeholder:text-muted-foreground resize-none"
           />
         </div>
+      )}
+
+      {/* LinkedIn Import */}
+      {activeTab === "linkedin" && (
+        <LinkedInImport
+          onSkillsImported={(importedSkills, profileText) => {
+            setSkills((prev) => [...new Set([...prev, ...importedSkills])]);
+            if (profileText) setResumeText(profileText);
+            setActiveTab("skills");
+          }}
+        />
       )}
 
       {/* Analyze Button */}

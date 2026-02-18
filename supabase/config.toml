@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.share-report]
 verify_jwt = false
+
+[functions.parse-linkedin]
+verify_jwt = false
