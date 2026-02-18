@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.generate-placement-plan]
 verify_jwt = false
+
+[functions.send-daily-notifications]
+verify_jwt = false
+
+[functions.generate-interview-questions]
+verify_jwt = false

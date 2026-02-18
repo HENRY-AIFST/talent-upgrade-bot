@@ -9,6 +9,7 @@ import ExportPDFButton from "./ExportPDFButton";
 import ShareEmailButton from "./ShareEmailButton";
 import ShareLinkButton from "./ShareLinkButton";
 import YouTubePlaylistSection from "./YouTubePlaylistSection";
+import InterviewPrep from "./InterviewPrep";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -81,6 +82,12 @@ const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
       {result.youtubePlaylist && result.youtubePlaylist.length > 0 && (
         <YouTubePlaylistSection playlists={result.youtubePlaylist} />
       )}
+
+      {/* Interview Prep */}
+      <InterviewPrep
+        targetRole={result.profileSummary.includes("Data Scientist") ? "Data Scientist" : "Software Engineer"}
+        skillGaps={result.skillGaps?.map((g) => ({ skill: g.skill, currentLevel: g.currentLevel, requiredLevel: g.requiredLevel })) || []}
+      />
 
       {/* Learning Roadmap */}
       <LearningRoadmap phases={result.learningRoadmap} />
