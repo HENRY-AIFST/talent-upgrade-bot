@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Compass, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import Particles from "@/components/Particles";
 import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
@@ -61,8 +62,21 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-8">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Particles
+          particleColors={["#ffffff"]}
+          particleCount={200}
+          particleSpread={10}
+          speed={0.1}
+          particleBaseSize={100}
+          moveParticlesOnHover
+          alphaParticles={false}
+          disableRotation={false}
+          pixelRatio={1}
+        />
+      </div>
+      <div className="w-full max-w-sm space-y-8 relative z-10">
         {/* Logo */}
         <div className="text-center space-y-2">
           <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center shadow-glow mx-auto">
