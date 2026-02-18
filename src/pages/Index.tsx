@@ -1,15 +1,27 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import SkillInputForm from "@/components/SkillInputForm";
 import AnalysisResults from "@/components/AnalysisResults";
+import AnalysisHistory from "@/components/AnalysisHistory";
+import RoleComparison from "@/components/RoleComparison";
 import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Compass } from "lucide-react";
+import { Compass, LogOut, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+
+type View = "input" | "results" | "compare";
 
 const Index = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [compareData, setCompareData] = useState<any[]>([]);
+  const [view, setView] = useState<View>("input");
   const [isLoading, setIsLoading] = useState(false);
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [historyKey, setHistoryKey] = useState(0);
 
   const handleAnalyze = async (data: { skills: string[]; targetRole: string; resumeText: string }) => {
     setIsLoading(true);
@@ -21,7 +33,23 @@ const Index = () => {
       if (error) throw error;
       if (analysisData?.error) throw new Error(analysisData.error);
 
-      setResult(analysisData as AnalysisResult);
+      const analysisResult = analysisData as AnalysisResult;
+      setResult(analysisResult);
+      setView("results");
+
+      // Save to DB if logged in
+      if (user) {
+        const { error: saveError } = await supabase.from("saved_analyses").insert({
+          user_id: user.id,
+          target_role: data.targetRole,
+          input_skills: data.skills,
+          resume_text: data.resumeText || null,
+          readiness_score: analysisResult.readinessScore,
+          result: analysisResult as any,
+        });
+        if (saveError) console.error("Failed to save:", saveError);
+        else setHistoryKey((k) => k + 1);
+      }
     } catch (e: any) {
       console.error("Analysis failed:", e);
       toast({
@@ -34,24 +62,55 @@ const Index = () => {
     }
   };
 
+  const handleViewAnalysis = useCallback((r: AnalysisResult) => {
+    setResult(r);
+    setView("results");
+  }, []);
+
+  const handleCompare = useCallback((analyses: any[]) => {
+    setCompareData(analyses);
+    setView("compare");
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border">
-        <div className="container max-w-4xl mx-auto px-4 py-5 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-            <Compass className="h-5 w-5 text-primary-foreground" />
+        <div className="container max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setView("input"); setResult(null); }}>
+            <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+              <Compass className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="font-display font-bold text-xl text-foreground">SkillBridge</h1>
+              <p className="text-xs text-muted-foreground">AI-Powered Career Gap Analyzer</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-display font-bold text-xl text-foreground">SkillBridge</h1>
-            <p className="text-xs text-muted-foreground">AI-Powered Career Gap Analyzer</p>
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                <span className="text-xs text-muted-foreground hidden sm:inline">{user.email}</span>
+                <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground hover:text-foreground">
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="text-foreground border-border">
+                <User className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main */}
-      <main className="container max-w-4xl mx-auto px-4 py-10">
-        {!result ? (
+      <main className="container max-w-5xl mx-auto px-4 py-8">
+        {view === "compare" ? (
+          <RoleComparison analyses={compareData} onBack={() => setView("input")} />
+        ) : view === "results" && result ? (
+          <AnalysisResults result={result} onReset={() => { setView("input"); setResult(null); }} />
+        ) : (
           <div className="space-y-8">
             {/* Hero */}
             <div className="text-center space-y-3">
@@ -63,13 +122,23 @@ const Index = () => {
               </p>
             </div>
 
+            {/* History (logged in users) */}
+            {user && (
+              <AnalysisHistory key={historyKey} onViewAnalysis={handleViewAnalysis} onCompare={handleCompare} />
+            )}
+
             {/* Form Card */}
             <div className="gradient-card rounded-2xl p-6 md:p-8 border border-border shadow-card">
               <SkillInputForm onAnalyze={handleAnalyze} isLoading={isLoading} />
             </div>
+
+            {!user && (
+              <p className="text-center text-sm text-muted-foreground">
+                <button onClick={() => navigate("/auth")} className="text-primary hover:underline">Sign in</button>
+                {" "}to save analyses and track your progress over time.
+              </p>
+            )}
           </div>
-        ) : (
-          <AnalysisResults result={result} onReset={() => setResult(null)} />
         )}
       </main>
     </div>
