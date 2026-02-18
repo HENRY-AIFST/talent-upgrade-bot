@@ -1,13 +1,16 @@
 import { AnalysisResult } from "@/types/analysis";
 import ReadinessScore from "./ReadinessScore";
 import SkillRadarChart from "./SkillRadarChart";
+import SkillBarChart from "./SkillBarChart";
 import SkillGapList from "./SkillGapList";
 import LearningRoadmap from "./LearningRoadmap";
 import TimelineView from "./TimelineView";
 import ExportPDFButton from "./ExportPDFButton";
 import ShareEmailButton from "./ShareEmailButton";
+import YouTubePlaylistSection from "./YouTubePlaylistSection";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface AnalysisResultsProps {
   result: AnalysisResult;
@@ -15,6 +18,8 @@ interface AnalysisResultsProps {
 }
 
 const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
+  const [chartType, setChartType] = useState<"radar" | "bar">("bar");
+
   return (
     <div className="space-y-8 animate-fade-in-up">
       <div className="flex items-center justify-between gap-4">
@@ -37,14 +42,43 @@ const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
         <ReadinessScore score={result.readinessScore} />
       </div>
 
-      {/* Skill Radar Chart */}
+      {/* Skills Chart with toggle */}
       <div className="gradient-card rounded-xl p-6 border border-border shadow-card">
-        <h3 className="font-display font-semibold text-foreground mb-4">Skills Comparison</h3>
-        <SkillRadarChart targetSkills={result.targetSkills} />
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-display font-semibold text-foreground">Skills Comparison</h3>
+          <div className="flex gap-1 p-1 bg-secondary rounded-lg">
+            <button
+              onClick={() => setChartType("bar")}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                chartType === "bar" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Bar Chart
+            </button>
+            <button
+              onClick={() => setChartType("radar")}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+                chartType === "radar" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Radar
+            </button>
+          </div>
+        </div>
+        {chartType === "bar" ? (
+          <SkillBarChart targetSkills={result.targetSkills} />
+        ) : (
+          <SkillRadarChart targetSkills={result.targetSkills} />
+        )}
       </div>
 
       {/* Skill Gaps */}
       <SkillGapList gaps={result.skillGaps} />
+
+      {/* YouTube Playlists */}
+      {result.youtubePlaylist && result.youtubePlaylist.length > 0 && (
+        <YouTubePlaylistSection playlists={result.youtubePlaylist} />
+      )}
 
       {/* Learning Roadmap */}
       <LearningRoadmap phases={result.learningRoadmap} />

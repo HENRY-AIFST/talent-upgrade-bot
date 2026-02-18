@@ -1,11 +1,11 @@
 import { RoadmapPhase } from "@/types/analysis";
-import { BookOpen, Wrench, Award, Lightbulb } from "lucide-react";
+import { BookOpen, Wrench, Award, Lightbulb, Youtube, ExternalLink } from "lucide-react";
 
 interface LearningRoadmapProps {
   phases: RoadmapPhase[];
 }
 
-const resourceIcons = { course: BookOpen, tool: Wrench, certification: Award };
+const resourceIcons: Record<string, typeof BookOpen> = { course: BookOpen, tool: Wrench, certification: Award, youtube: Youtube };
 
 const LearningRoadmap = ({ phases }: LearningRoadmapProps) => {
   return (
@@ -36,8 +36,15 @@ const LearningRoadmap = ({ phases }: LearningRoadmapProps) => {
                     const Icon = resourceIcons[res.type] || BookOpen;
                     return (
                       <div key={j} className="flex items-center gap-2 text-sm">
-                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="text-secondary-foreground">{res.name}</span>
+                        <Icon className={`h-3.5 w-3.5 ${res.type === "youtube" ? "text-destructive" : "text-muted-foreground"}`} />
+                        {res.url ? (
+                          <a href={res.url} target="_blank" rel="noopener noreferrer" className="text-secondary-foreground hover:text-primary hover:underline flex items-center gap-1">
+                            {res.name}
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        ) : (
+                          <span className="text-secondary-foreground">{res.name}</span>
+                        )}
                         <span className="text-xs text-muted-foreground capitalize">({res.type})</span>
                       </div>
                     );

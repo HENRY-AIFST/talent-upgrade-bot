@@ -22,10 +22,13 @@ You MUST respond with valid JSON only, no markdown, no code fences. Use this exa
   "currentSkills": [{"name": "skill", "level": <1-10>}],
   "targetSkills": [{"name": "skill", "level": <1-10>, "currentLevel": <0-10>}],
   "skillGaps": [{"skill": "name", "importance": "critical|high|medium", "reason": "why this skill matters", "currentLevel": 0, "requiredLevel": 8}],
-  "learningRoadmap": [{"phase": "Phase 1 (Month 1-2)", "title": "Foundation", "skills": ["skill1"], "resources": [{"name": "resource", "type": "course|tool|certification", "url": ""}], "projects": ["project idea"]}],
+  "learningRoadmap": [{"phase": "Phase 1 (Month 1-2)", "title": "Foundation", "skills": ["skill1"], "resources": [{"name": "resource", "type": "course|tool|certification|youtube", "url": "https://..."}], "projects": ["project idea"]}],
   "certifications": [{"name": "cert name", "provider": "provider", "relevance": "high|medium"}],
+  "youtubePlaylist": [{"title": "Playlist title", "url": "https://www.youtube.com/playlist?list=...", "skill": "skill name this covers", "description": "Brief description of what this playlist teaches"}],
   "timeline": {"threeMonths": "what you can achieve", "sixMonths": "what you can achieve", "oneYear": "what you can achieve"}
-}`;
+}
+
+IMPORTANT: For the youtubePlaylist field, provide 3-6 real, well-known YouTube playlists or channels that are genuinely helpful for learning the required skills. Use real YouTube URLs when you know them, otherwise use search URLs like https://www.youtube.com/results?search_query=skill+tutorial. Each playlist should map to a specific skill gap.`;
 
     const userMessage = resumeText
       ? `Resume/Profile:\n${resumeText}\n\nTarget Role: ${targetRole}\n\nAdditional Skills: ${skills.join(", ")}`
