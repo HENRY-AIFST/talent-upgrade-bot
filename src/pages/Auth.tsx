@@ -1,0 +1,161 @@
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { Compass, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+const Auth = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        navigate("/");
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { display_name: displayName },
+            emailRedirectTo: window.location.origin,
+          },
+        });
+        if (error) throw error;
+        toast({ title: "Check your email", description: "We sent you a confirmation link." });
+      }
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({ title: "Check your email", description: "Password reset link sent." });
+      setShowReset(false);
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="w-full max-w-sm space-y-8">
+        {/* Logo */}
+        <div className="text-center space-y-2">
+          <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center shadow-glow mx-auto">
+            <Compass className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <h1 className="font-display font-bold text-2xl text-foreground">SkillBridge</h1>
+          <p className="text-sm text-muted-foreground">
+            {showReset ? "Reset your password" : isLogin ? "Welcome back" : "Create your account"}
+          </p>
+        </div>
+
+        {showReset ? (
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10 bg-secondary border-border"
+                required
+              />
+            </div>
+            <Button type="submit" disabled={loading} className="w-full gradient-primary text-primary-foreground font-semibold">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Reset Link"}
+            </Button>
+            <button type="button" onClick={() => setShowReset(false)} className="w-full text-sm text-muted-foreground hover:text-foreground">
+              Back to login
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleAuth} className="space-y-4">
+            {!isLogin && (
+              <div className="relative">
+                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Display Name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="pl-10 bg-secondary border-border"
+                  required={!isLogin}
+                />
+              </div>
+            )}
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10 bg-secondary border-border"
+                required
+              />
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 bg-secondary border-border"
+                required
+                minLength={6}
+              />
+            </div>
+            <Button type="submit" disabled={loading} className="w-full gradient-primary text-primary-foreground font-semibold py-5">
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  {isLogin ? "Sign In" : "Sign Up"}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </>
+              )}
+            </Button>
+            <div className="flex items-center justify-between text-sm">
+              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline">
+                {isLogin ? "Create account" : "Already have an account?"}
+              </button>
+              {isLogin && (
+                <button type="button" onClick={() => setShowReset(true)} className="text-muted-foreground hover:text-foreground">
+                  Forgot password?
+                </button>
+              )}
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Auth;
