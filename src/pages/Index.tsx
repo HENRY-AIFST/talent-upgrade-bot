@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationBell from "@/components/NotificationBell";
 import Particles from "@/components/Particles";
+import RotatingText from "@/components/RotatingText";
 
 type View = "input" | "results" | "compare" | "progress" | "placement";
 
@@ -163,8 +164,20 @@ const Index = () => {
           <div className="space-y-8">
             {/* Hero */}
             <div className="text-center space-y-3">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-                Bridge Your <span className="text-gradient">Skill Gap</span>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground flex flex-wrap items-center justify-center gap-x-3">
+                Bridge Your
+                <RotatingText
+                  texts={['Skill Gap', 'Career Path', 'Future Role', 'Dream Job']}
+                  mainClassName="px-3 bg-primary text-primary-foreground overflow-hidden py-1 rounded-lg"
+                  staggerFrom="last"
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "-120%" }}
+                  staggerDuration={0.025}
+                  splitLevelClassName="overflow-hidden pb-1"
+                  transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                  rotationInterval={2000}
+                />
               </h2>
               <p className="text-muted-foreground max-w-xl mx-auto">
                 Enter your skills or paste your resume, choose your dream role, and get an AI-powered roadmap to get there.
