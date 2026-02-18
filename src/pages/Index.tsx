@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationBell from "@/components/NotificationBell";
+import Particles from "@/components/Particles";
 
 type View = "input" | "results" | "compare" | "progress" | "placement";
 
@@ -80,9 +81,22 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Particles
+          particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
+          particleCount={150}
+          particleSpread={10}
+          speed={0.05}
+          particleBaseSize={80}
+          moveParticlesOnHover
+          alphaParticles
+          disableRotation={false}
+          pixelRatio={1}
+        />
+      </div>
       {/* Header */}
-      <header className="border-b border-border">
+      <header className="border-b border-border relative z-10">
         <div className="container max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setView("input"); setResult(null); }}>
             <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
@@ -136,7 +150,7 @@ const Index = () => {
       </header>
 
       {/* Main */}
-      <main className="container max-w-5xl mx-auto px-4 py-8">
+      <main className="container max-w-5xl mx-auto px-4 py-8 relative z-10">
         {view === "placement" ? (
           <PlacementPlanner onBack={() => setView("input")} />
         ) : view === "progress" ? (

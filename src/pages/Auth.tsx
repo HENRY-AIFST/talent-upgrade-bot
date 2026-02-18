@@ -65,7 +65,7 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <Particles
-          particleColors={["#ffffff"]}
+          particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
           particleCount={200}
           particleSpread={10}
           speed={0.1}
