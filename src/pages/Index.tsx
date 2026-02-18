@@ -4,17 +4,18 @@ import AnalysisResults from "@/components/AnalysisResults";
 import AnalysisHistory from "@/components/AnalysisHistory";
 import RoleComparison from "@/components/RoleComparison";
 import ProgressTracker from "@/components/ProgressTracker";
+import PlacementPlanner from "@/components/PlacementPlanner";
 import SkillRecommendations from "@/components/SkillRecommendations";
 import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Compass, LogOut, User, TrendingUp } from "lucide-react";
+import { Compass, LogOut, User, TrendingUp, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 
-type View = "input" | "results" | "compare" | "progress";
+type View = "input" | "results" | "compare" | "progress" | "placement";
 
 const Index = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -94,15 +95,26 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setView("progress")}
-                className="text-muted-foreground hover:text-foreground text-xs"
-              >
-                <TrendingUp className="h-4 w-4 mr-1" />
-                Progress
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setView("placement")}
+                  className="text-muted-foreground hover:text-foreground text-xs"
+                >
+                  <Building2 className="h-4 w-4 mr-1" />
+                  Placement
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setView("progress")}
+                  className="text-muted-foreground hover:text-foreground text-xs"
+                >
+                  <TrendingUp className="h-4 w-4 mr-1" />
+                  Progress
+                </Button>
+              </>
             )}
             {user ? (
               <>
@@ -123,7 +135,9 @@ const Index = () => {
 
       {/* Main */}
       <main className="container max-w-5xl mx-auto px-4 py-8">
-        {view === "progress" ? (
+        {view === "placement" ? (
+          <PlacementPlanner onBack={() => setView("input")} />
+        ) : view === "progress" ? (
           <ProgressTracker onBack={() => setView("input")} />
         ) : view === "compare" ? (
           <RoleComparison analyses={compareData} onBack={() => setView("input")} />

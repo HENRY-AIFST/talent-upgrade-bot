@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_tasks: {
+        Row: {
+          category: string
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          description: string | null
+          id: string
+          is_completed: boolean
+          plan_id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          completed_at?: string | null
+          created_at?: string
+          day_number: number
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          plan_id: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          completed_at?: string | null
+          created_at?: string
+          day_number?: number
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          plan_id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_tasks_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "placement_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      placement_plans: {
+        Row: {
+          company_name: string
+          created_at: string
+          id: string
+          plan: Json
+          target_role: string
+          total_days: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          id?: string
+          plan?: Json
+          target_role: string
+          total_days?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          id?: string
+          plan?: Json
+          target_role?: string
+          total_days?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

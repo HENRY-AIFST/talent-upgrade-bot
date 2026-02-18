@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.recommend-skills]
 verify_jwt = false
+
+[functions.generate-placement-plan]
+verify_jwt = false
