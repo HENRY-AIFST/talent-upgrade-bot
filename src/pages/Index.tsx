@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Compass, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type View = "input" | "results" | "compare";
 
@@ -87,6 +88,7 @@ const Index = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             {user ? (
               <>
                 <span className="text-xs text-muted-foreground hidden sm:inline">{user.email}</span>

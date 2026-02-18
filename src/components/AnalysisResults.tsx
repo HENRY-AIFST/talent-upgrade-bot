@@ -5,6 +5,7 @@ import SkillGapList from "./SkillGapList";
 import LearningRoadmap from "./LearningRoadmap";
 import TimelineView from "./TimelineView";
 import ExportPDFButton from "./ExportPDFButton";
+import ShareEmailButton from "./ShareEmailButton";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -21,7 +22,10 @@ const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
           <ArrowLeft className="h-4 w-4 mr-2" />
           New Analysis
         </Button>
-        <ExportPDFButton result={result} />
+        <div className="flex items-center gap-2">
+          <ExportPDFButton result={result} />
+          <ShareEmailButton result={result} />
+        </div>
       </div>
 
       {/* Profile Summary & Readiness */}
