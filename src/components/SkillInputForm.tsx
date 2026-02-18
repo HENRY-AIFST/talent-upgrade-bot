@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -24,9 +24,10 @@ const POPULAR_ROLES = [
 interface SkillInputFormProps {
   onAnalyze: (data: { skills: string[]; targetRole: string; resumeText: string }) => void;
   isLoading: boolean;
+  onFormChange?: (skills: string[], targetRole: string) => void;
 }
 
-const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
+const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormProps) => {
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const [targetRole, setTargetRole] = useState("");
@@ -37,6 +38,10 @@ const SkillInputForm = ({ onAnalyze, isLoading }: SkillInputFormProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    onFormChange?.(skills, targetRole);
+  }, [skills, targetRole, onFormChange]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();

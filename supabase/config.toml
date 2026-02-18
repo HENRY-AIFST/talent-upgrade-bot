@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.parse-linkedin]
 verify_jwt = false
+
+[functions.recommend-skills]
+verify_jwt = false
