@@ -14,6 +14,7 @@ import { Compass, LogOut, User, TrendingUp, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
+import NotificationBell from "@/components/NotificationBell";
 
 type View = "input" | "results" | "compare" | "progress" | "placement";
 
@@ -116,6 +117,7 @@ const Index = () => {
                 </Button>
               </>
             )}
+            {user && <NotificationBell />}
             {user ? (
               <>
                 <span className="text-xs text-muted-foreground hidden sm:inline">{user.email}</span>
