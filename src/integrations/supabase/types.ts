@@ -77,6 +77,33 @@ export type Database = {
         }
         Relationships: []
       }
+      shared_analyses: {
+        Row: {
+          created_at: string
+          id: string
+          result: Json
+          share_id: string
+          target_role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          result: Json
+          share_id?: string
+          target_role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          result?: Json
+          share_id?: string
+          target_role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

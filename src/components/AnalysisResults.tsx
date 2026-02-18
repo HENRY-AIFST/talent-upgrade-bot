@@ -7,6 +7,7 @@ import LearningRoadmap from "./LearningRoadmap";
 import TimelineView from "./TimelineView";
 import ExportPDFButton from "./ExportPDFButton";
 import ShareEmailButton from "./ShareEmailButton";
+import ShareLinkButton from "./ShareLinkButton";
 import YouTubePlaylistSection from "./YouTubePlaylistSection";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
         </Button>
         <div className="flex items-center gap-2">
           <ExportPDFButton result={result} />
+          <ShareLinkButton result={result} />
           <ShareEmailButton result={result} />
         </div>
       </div>

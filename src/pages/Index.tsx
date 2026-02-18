@@ -4,6 +4,7 @@ import AnalysisResults from "@/components/AnalysisResults";
 import AnalysisHistory from "@/components/AnalysisHistory";
 import RoleComparison from "@/components/RoleComparison";
 import ProgressTracker from "@/components/ProgressTracker";
+import SkillRecommendations from "@/components/SkillRecommendations";
 import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +21,8 @@ const Index = () => {
   const [compareData, setCompareData] = useState<any[]>([]);
   const [view, setView] = useState<View>("input");
   const [isLoading, setIsLoading] = useState(false);
+  const [formSkills, setFormSkills] = useState<string[]>([]);
+  const [formRole, setFormRole] = useState("");
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -145,8 +148,11 @@ const Index = () => {
 
             {/* Form Card */}
             <div className="gradient-card rounded-2xl p-6 md:p-8 border border-border shadow-card">
-              <SkillInputForm onAnalyze={handleAnalyze} isLoading={isLoading} />
+              <SkillInputForm onAnalyze={handleAnalyze} isLoading={isLoading} onFormChange={(skills, role) => { setFormSkills(skills); setFormRole(role); }} />
             </div>
+
+            {/* Skill Recommendations */}
+            <SkillRecommendations targetRole={formRole} currentSkills={formSkills} />
 
             {!user && (
               <p className="text-center text-sm text-muted-foreground">
