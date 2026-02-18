@@ -4,6 +4,7 @@ import SkillRadarChart from "./SkillRadarChart";
 import SkillGapList from "./SkillGapList";
 import LearningRoadmap from "./LearningRoadmap";
 import TimelineView from "./TimelineView";
+import ExportPDFButton from "./ExportPDFButton";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -15,11 +16,12 @@ interface AnalysisResultsProps {
 const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
   return (
     <div className="space-y-8 animate-fade-in-up">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
         <Button variant="ghost" onClick={onReset} className="text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4 mr-2" />
           New Analysis
         </Button>
+        <ExportPDFButton result={result} />
       </div>
 
       {/* Profile Summary & Readiness */}
