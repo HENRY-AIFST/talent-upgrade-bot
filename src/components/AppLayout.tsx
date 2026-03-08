@@ -39,7 +39,7 @@ const AppLayout = ({ children, initialLoadAnimation = false, rightActions }: App
           pillTextColor="hsl(var(--primary-foreground))"
           initialLoadAnimation={initialLoadAnimation}
         />
-        <div className="absolute top-4 right-4 flex items-center gap-2 z-[100]">
+        <div className="absolute top-4 right-16 md:right-4 flex items-center gap-2 z-[100]">
           <ThemeToggle />
           {rightActions}
         </div>
