@@ -1,9 +1,9 @@
 .pill-nav-container {
-  position: absolute;
-  top: 1em;
+  position: relative;
   z-index: 99;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  padding-top: 1em;
 }
 
 @media (max-width: 768px) {
