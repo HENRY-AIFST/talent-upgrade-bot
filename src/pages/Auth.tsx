@@ -93,7 +93,7 @@ const Auth = () => {
           ease="power2.easeOut"
           baseColor="hsl(var(--card))"
           pillColor="hsl(var(--primary))"
-          hoveredPillTextColor="hsl(var(--primary-foreground))"
+          hoveredPillTextColor="hsl(var(--foreground))"
           pillTextColor="hsl(var(--primary-foreground))"
           initialLoadAnimation={false}
         />
