@@ -107,8 +107,8 @@ const Index = () => {
             ...(user ? [
               { label: 'My Hub', href: '/client' },
               { label: 'Mentor', href: '/mentor' },
-              { label: 'Placement', href: '#placement' },
-              { label: 'Progress', href: '#progress' },
+              { label: 'Placement', href: '/placement' },
+              { label: 'Progress', href: '/progress' },
             ] : []),
             ...(!user ? [{ label: 'Sign In', href: '/auth' }] : []),
           ]}
