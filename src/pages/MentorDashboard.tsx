@@ -255,9 +255,12 @@ const MentorDashboard = () => {
 
       <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10">
         <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-lg grid-cols-4">
             <TabsTrigger value="students" className="gap-1">
               <Users className="h-4 w-4" /> Students
+            </TabsTrigger>
+            <TabsTrigger value="sessions" className="gap-1">
+              <Calendar className="h-4 w-4" /> Sessions
             </TabsTrigger>
             <TabsTrigger value="tasks" className="gap-1">
               <ClipboardList className="h-4 w-4" /> Tasks
@@ -467,6 +470,66 @@ const MentorDashboard = () => {
                 <Card className="col-span-full">
                   <CardContent className="p-8 text-center text-muted-foreground">
                     No students to track progress for.
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Sessions Tab */}
+          <TabsContent value="sessions" className="space-y-4">
+            <div className="space-y-3">
+              {sessions.map(s => (
+                <Card key={s.id} className="border-border">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Video className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm text-foreground">
+                            {s.topic || "Guidance Session"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {s.requested_date} at {s.requested_time} · {s.duration_minutes}min
+                          </p>
+                          {s.company_name && (
+                            <Badge variant="outline" className="text-[10px] mt-1">{s.company_name}</Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {s.status === "pending" ? (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => handleSessionAction(s.id, "rejected")} className="text-destructive">
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" onClick={() => handleSessionAction(s.id, "approved")}>
+                              <Check className="h-4 w-4 mr-1" /> Approve
+                            </Button>
+                          </>
+                        ) : (
+                          <Badge variant={s.status === "approved" ? "default" : "destructive"}>
+                            {s.status}
+                          </Badge>
+                        )}
+                        {s.meet_link && (
+                          <a href={s.meet_link} target="_blank" rel="noopener noreferrer">
+                            <Button size="sm" variant="outline" className="text-xs">
+                              <Video className="h-3 w-3 mr-1" /> Meet
+                            </Button>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {sessions.length === 0 && (
+                <Card>
+                  <CardContent className="p-8 text-center text-muted-foreground">
+                    No session requests yet.
                   </CardContent>
                 </Card>
               )}
