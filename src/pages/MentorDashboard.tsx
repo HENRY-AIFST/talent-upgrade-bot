@@ -80,9 +80,37 @@ const MentorDashboard = () => {
     
     setIsMentor(!!data);
     if (data) {
-      await Promise.all([fetchStudents(), fetchTasks()]);
+      await Promise.all([fetchStudents(), fetchTasks(), fetchSessions()]);
     }
     setLoading(false);
+  };
+
+  const fetchSessions = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("booking_sessions")
+      .select("*")
+      .eq("mentor_id", user.id)
+      .order("created_at", { ascending: false });
+    setSessions((data as BookingSession[]) || []);
+  };
+
+  const handleSessionAction = async (sessionId: string, action: "approved" | "rejected") => {
+    const meetLink = action === "approved"
+      ? `https://meet.google.com/${crypto.randomUUID().slice(0, 3)}-${crypto.randomUUID().slice(0, 4)}-${crypto.randomUUID().slice(0, 3)}`
+      : null;
+    
+    const { error } = await supabase
+      .from("booking_sessions")
+      .update({ status: action, meet_link: meetLink })
+      .eq("id", sessionId);
+    
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: action === "approved" ? "Session approved! Meet link generated." : "Session rejected." });
+      fetchSessions();
+    }
   };
 
   const fetchStudents = async () => {
