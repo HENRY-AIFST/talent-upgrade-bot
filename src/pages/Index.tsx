@@ -10,13 +10,13 @@ import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Compass, LogOut, User, Users, TrendingUp, Building2, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Compass } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationBell from "@/components/NotificationBell";
 import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
+import PillNav from "@/components/PillNav";
 
 type View = "input" | "results" | "compare" | "progress" | "placement";
 
