@@ -5,7 +5,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import logoImg from "@/assets/logo.png";
 
 interface AppLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
   initialLoadAnimation?: boolean;
   rightActions?: ReactNode;
 }
