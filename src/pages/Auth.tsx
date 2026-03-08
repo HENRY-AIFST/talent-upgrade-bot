@@ -66,7 +66,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <Particles
           particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
@@ -80,9 +80,32 @@ const Auth = () => {
           pixelRatio={1}
         />
       </div>
-      <div className="w-full max-w-sm space-y-8 relative z-10">
-        {/* Logo */}
-        <div className="text-center space-y-2">
+
+      {/* PillNav */}
+      <div className="relative z-10">
+        <PillNav
+          logo={logoImg}
+          logoAlt="SkillBridge"
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Sign In', href: '/auth' },
+          ]}
+          ease="power2.easeOut"
+          baseColor="hsl(var(--card))"
+          pillColor="hsl(var(--primary))"
+          hoveredPillTextColor="hsl(var(--primary-foreground))"
+          pillTextColor="hsl(var(--primary-foreground))"
+          initialLoadAnimation={false}
+        />
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-8 relative z-10">
+          {/* Logo */}
+          <div className="text-center space-y-2">
           <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center shadow-glow mx-auto">
             <Compass className="h-6 w-6 text-primary-foreground" />
           </div>
