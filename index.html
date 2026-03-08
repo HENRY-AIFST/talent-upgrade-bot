@@ -20,6 +20,17 @@
   </head>
 
   <body>
+    <script>
+      // Apply theme before React renders to prevent flash
+      (function() {
+        var theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.documentElement.classList.add('light');
+        } else {
+          document.documentElement.classList.remove('light');
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
