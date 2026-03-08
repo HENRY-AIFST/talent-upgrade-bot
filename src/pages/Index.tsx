@@ -99,7 +99,7 @@ const Index = () => {
       {/* PillNav Header */}
       <div className="relative z-10">
         <PillNav
-          logo={<Compass className="h-5 w-5 text-primary-foreground" />}
+          logo={logoImg}
           logoAlt="SkillBridge"
           items={[
             { label: 'Home', href: '/' },
@@ -113,10 +113,10 @@ const Index = () => {
           ]}
           activeHref="/"
           ease="power2.easeOut"
-          baseColor="hsl(220, 18%, 10%)"
-          pillColor="hsl(174, 72%, 50%)"
-          hoveredPillTextColor="hsl(220, 20%, 7%)"
-          pillTextColor="hsl(220, 20%, 7%)"
+          baseColor="hsl(var(--card))"
+          pillColor="hsl(var(--primary))"
+          hoveredPillTextColor="hsl(var(--primary-foreground))"
+          pillTextColor="hsl(var(--primary-foreground))"
           initialLoadAnimation={true}
         />
         <div className="absolute top-4 right-4 flex items-center gap-2">
