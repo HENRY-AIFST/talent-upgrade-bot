@@ -7,6 +7,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import SharedAnalysis from "@/pages/SharedAnalysis";
 import NotFound from "@/pages/NotFound";
 import MentorDashboard from "@/pages/MentorDashboard";
+import ClientDashboard from "@/pages/ClientDashboard";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -19,6 +20,7 @@ const AnimatedRoutes = () => {
         <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
         <Route path="/shared/:shareId" element={<PageTransition><SharedAnalysis /></PageTransition>} />
         <Route path="/mentor" element={<PageTransition><MentorDashboard /></PageTransition>} />
+        <Route path="/client" element={<PageTransition><ClientDashboard /></PageTransition>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
