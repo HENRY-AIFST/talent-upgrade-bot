@@ -4,7 +4,6 @@ import AnalysisResults from "@/components/AnalysisResults";
 import AnalysisHistory from "@/components/AnalysisHistory";
 import RoleComparison from "@/components/RoleComparison";
 import SkillRecommendations from "@/components/SkillRecommendations";
-import SkillRecommendations from "@/components/SkillRecommendations";
 import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
