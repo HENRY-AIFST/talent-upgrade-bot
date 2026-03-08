@@ -16,7 +16,7 @@ import {
   ArrowLeft, Users, Building2, Calendar, Plus, Trash2, Video,
   Clock, CheckCircle2, XCircle, CircleDot
 } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
 
 interface Mentor {
@@ -199,25 +199,9 @@ const ClientDashboard = () => {
         />
       </div>
 
-      <header className="border-b border-border relative z-10">
-        <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-xl text-foreground">My Learning Hub</h1>
-              <p className="text-xs text-muted-foreground">Book mentors & manage companies</p>
-            </div>
-          </div>
-          <ThemeToggle />
-        </div>
-      </header>
+      <AppLayout />
 
-      <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10">
+      <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10 pt-12">
         <Tabs defaultValue="mentors" className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="mentors" className="gap-1">
