@@ -115,6 +115,15 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={() => navigate("/mentor")}
+                  className="text-muted-foreground hover:text-foreground text-xs"
+                >
+                  <Users className="h-4 w-4 mr-1" />
+                  Mentor
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setView("placement")}
                   className="text-muted-foreground hover:text-foreground text-xs"
                 >
