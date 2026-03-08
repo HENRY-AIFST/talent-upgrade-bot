@@ -3,22 +3,21 @@ import SkillInputForm from "@/components/SkillInputForm";
 import AnalysisResults from "@/components/AnalysisResults";
 import AnalysisHistory from "@/components/AnalysisHistory";
 import RoleComparison from "@/components/RoleComparison";
-import ProgressTracker from "@/components/ProgressTracker";
-import PlacementPlanner from "@/components/PlacementPlanner";
 import SkillRecommendations from "@/components/SkillRecommendations";
 import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Compass, LogOut, User, Users, TrendingUp, Building2, Calendar } from "lucide-react";
+import { Compass, LogOut } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import NotificationBell from "@/components/NotificationBell";
 import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
+import PillNav from "@/components/PillNav";
 
-type View = "input" | "results" | "compare" | "progress" | "placement";
+type View = "input" | "results" | "compare";
 
 const Index = () => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -96,85 +95,43 @@ const Index = () => {
           pixelRatio={1}
         />
       </div>
-      {/* Header */}
-      <header className="border-b border-border relative z-10">
-        <div className="container max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setView("input"); setResult(null); }}>
-            <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-              <Compass className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-xl text-foreground">SkillBridge</h1>
-              <p className="text-xs text-muted-foreground">AI-Powered Career Gap Analyzer</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            {user && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate("/client")}
-                  className="text-muted-foreground hover:text-foreground text-xs"
-                >
-                  <Calendar className="h-4 w-4 mr-1" />
-                  My Hub
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate("/mentor")}
-                  className="text-muted-foreground hover:text-foreground text-xs"
-                >
-                  <Users className="h-4 w-4 mr-1" />
-                  Mentor
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setView("placement")}
-                  className="text-muted-foreground hover:text-foreground text-xs"
-                >
-                  <Building2 className="h-4 w-4 mr-1" />
-                  Placement
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setView("progress")}
-                  className="text-muted-foreground hover:text-foreground text-xs"
-                >
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  Progress
-                </Button>
-              </>
-            )}
-            {user && <NotificationBell />}
-            {user ? (
-              <>
-                <span className="text-xs text-muted-foreground hidden sm:inline">{user.email}</span>
-                <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground hover:text-foreground">
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </>
-            ) : (
-              <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="text-foreground border-border">
-                <User className="h-4 w-4 mr-2" />
-                Sign In
-              </Button>
-            )}
-          </div>
+      {/* PillNav Header */}
+      <div className="relative z-10">
+        <PillNav
+          logo={<Compass className="h-5 w-5 text-primary-foreground" />}
+          logoAlt="SkillBridge"
+          items={[
+            { label: 'Home', href: '/' },
+            ...(user ? [
+              { label: 'My Hub', href: '/client' },
+              { label: 'Mentor', href: '/mentor' },
+              { label: 'Placement', href: '/placement' },
+              { label: 'Progress', href: '/progress' },
+            ] : []),
+            ...(!user ? [{ label: 'Sign In', href: '/auth' }] : []),
+          ]}
+          activeHref="/"
+          ease="power2.easeOut"
+          baseColor="hsl(220, 18%, 10%)"
+          pillColor="hsl(174, 72%, 50%)"
+          hoveredPillTextColor="hsl(220, 20%, 7%)"
+          pillTextColor="hsl(220, 20%, 7%)"
+          initialLoadAnimation={true}
+        />
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <ThemeToggle />
+          {user && <NotificationBell />}
+          {user && (
+            <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground hover:text-foreground">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          )}
         </div>
-      </header>
+      </div>
 
       {/* Main */}
       <main className="container max-w-5xl mx-auto px-4 py-8 relative z-10">
-        {view === "placement" ? (
-          <PlacementPlanner onBack={() => setView("input")} />
-        ) : view === "progress" ? (
-          <ProgressTracker onBack={() => setView("input")} />
-        ) : view === "compare" ? (
+        {view === "compare" ? (
           <RoleComparison analyses={compareData} onBack={() => setView("input")} />
         ) : view === "results" && result ? (
           <AnalysisResults result={result} onReset={() => { setView("input"); setResult(null); }} />
