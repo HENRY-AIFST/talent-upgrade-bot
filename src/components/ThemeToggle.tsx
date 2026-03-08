@@ -1,30 +1,56 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const ThemeToggle = () => {
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") === "light" ? "light" : "dark";
-    }
-    return "dark";
-  });
+const getStoredTheme = (): "dark" | "light" => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("theme") === "light" ? "light" : "dark";
+  }
+  return "dark";
+};
 
+const applyTheme = (theme: "dark" | "light") => {
+  const root = document.documentElement;
+  if (theme === "light") {
+    root.classList.add("light");
+  } else {
+    root.classList.remove("light");
+  }
+};
+
+const ThemeToggle = () => {
+  const [theme, setTheme] = useState<"dark" | "light">(getStoredTheme);
+
+  // Sync DOM on mount (handles navigation between pages)
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "light") {
-      root.classList.add("light");
-    } else {
-      root.classList.remove("light");
-    }
-    localStorage.setItem("theme", theme);
+    applyTheme(theme);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    applyTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
   }, [theme]);
+
+  // Listen for storage changes from other tabs/components
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === "theme") {
+        const t = e.newValue === "light" ? "light" : "dark";
+        setTheme(t);
+        applyTheme(t);
+      }
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={toggleTheme}
       className="text-muted-foreground hover:text-foreground"
       aria-label="Toggle theme"
     >
