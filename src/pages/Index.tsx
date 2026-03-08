@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import SkillInputForm from "@/components/SkillInputForm";
 import AnalysisResults from "@/components/AnalysisResults";
 import AnalysisHistory from "@/components/AnalysisHistory";
@@ -8,7 +8,7 @@ import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Compass, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -16,6 +16,7 @@ import NotificationBell from "@/components/NotificationBell";
 import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
 import PillNav from "@/components/PillNav";
+import logoImg from "@/assets/logo.png";
 
 type View = "input" | "results" | "compare";
 
