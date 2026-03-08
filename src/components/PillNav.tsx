@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import './PillNav.css';
 
@@ -39,6 +39,8 @@ const PillNav = ({
   initialLoadAnimation = true
 }: PillNavProps) => {
   const resolvedPillTextColor = pillTextColor ?? baseColor;
+  const location = useLocation();
+  const currentActiveHref = activeHref ?? location.pathname;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const circleRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const tlRefs = useRef<(gsap.core.Timeline | null)[]>([]);
@@ -196,7 +198,7 @@ const PillNav = ({
                   <Link
                     role="menuitem"
                     to={item.href}
-                    className={`pill${activeHref === item.href ? ' is-active' : ''}`}
+                    className={`pill${currentActiveHref === item.href ? ' is-active' : ''}`}
                     aria-label={item.ariaLabel || item.label}
                     onMouseEnter={() => handleEnter(i)}
                     onMouseLeave={() => handleLeave(i)}
@@ -211,7 +213,7 @@ const PillNav = ({
                   <a
                     role="menuitem"
                     href={item.href}
-                    className={`pill${activeHref === item.href ? ' is-active' : ''}`}
+                    className={`pill${currentActiveHref === item.href ? ' is-active' : ''}`}
                     aria-label={item.ariaLabel || item.label}
                     onMouseEnter={() => handleEnter(i)}
                     onMouseLeave={() => handleLeave(i)}
@@ -251,7 +253,7 @@ const PillNav = ({
               {isRouterLink(item.href) ? (
                 <Link
                   to={item.href}
-                  className={`mobile-menu-link${activeHref === item.href ? ' is-active' : ''}`}
+                  className={`mobile-menu-link${currentActiveHref === item.href ? ' is-active' : ''}`}
                   onClick={() => { setIsMobileMenuOpen(false); toggleMobileMenu(); }}
                 >
                   {item.label}
@@ -259,7 +261,7 @@ const PillNav = ({
               ) : (
                 <a
                   href={item.href}
-                  className={`mobile-menu-link${activeHref === item.href ? ' is-active' : ''}`}
+                  className={`mobile-menu-link${currentActiveHref === item.href ? ' is-active' : ''}`}
                   onClick={() => { setIsMobileMenuOpen(false); toggleMobileMenu(); }}
                 >
                   {item.label}
