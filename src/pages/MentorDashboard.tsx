@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2 } from "lucide-react";
+import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import Particles from "@/components/Particles";
 
@@ -37,12 +37,27 @@ interface MentorTask {
   created_at: string;
 }
 
+interface BookingSession {
+  id: string;
+  client_id: string;
+  requested_date: string;
+  requested_time: string;
+  duration_minutes: number;
+  status: string;
+  topic: string | null;
+  company_name: string | null;
+  meet_link: string | null;
+  mentor_notes: string | null;
+  created_at: string;
+}
+
 const MentorDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [students, setStudents] = useState<Student[]>([]);
   const [tasks, setTasks] = useState<MentorTask[]>([]);
+  const [sessions, setSessions] = useState<BookingSession[]>([]);
   const [isMentor, setIsMentor] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
@@ -65,9 +80,37 @@ const MentorDashboard = () => {
     
     setIsMentor(!!data);
     if (data) {
-      await Promise.all([fetchStudents(), fetchTasks()]);
+      await Promise.all([fetchStudents(), fetchTasks(), fetchSessions()]);
     }
     setLoading(false);
+  };
+
+  const fetchSessions = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("booking_sessions")
+      .select("*")
+      .eq("mentor_id", user.id)
+      .order("created_at", { ascending: false });
+    setSessions((data as BookingSession[]) || []);
+  };
+
+  const handleSessionAction = async (sessionId: string, action: "approved" | "rejected") => {
+    const meetLink = action === "approved"
+      ? `https://meet.google.com/${crypto.randomUUID().slice(0, 3)}-${crypto.randomUUID().slice(0, 4)}-${crypto.randomUUID().slice(0, 3)}`
+      : null;
+    
+    const { error } = await supabase
+      .from("booking_sessions")
+      .update({ status: action, meet_link: meetLink })
+      .eq("id", sessionId);
+    
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: action === "approved" ? "Session approved! Meet link generated." : "Session rejected." });
+      fetchSessions();
+    }
   };
 
   const fetchStudents = async () => {
@@ -212,9 +255,12 @@ const MentorDashboard = () => {
 
       <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10">
         <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-lg grid-cols-4">
             <TabsTrigger value="students" className="gap-1">
               <Users className="h-4 w-4" /> Students
+            </TabsTrigger>
+            <TabsTrigger value="sessions" className="gap-1">
+              <Calendar className="h-4 w-4" /> Sessions
             </TabsTrigger>
             <TabsTrigger value="tasks" className="gap-1">
               <ClipboardList className="h-4 w-4" /> Tasks
@@ -424,6 +470,66 @@ const MentorDashboard = () => {
                 <Card className="col-span-full">
                   <CardContent className="p-8 text-center text-muted-foreground">
                     No students to track progress for.
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Sessions Tab */}
+          <TabsContent value="sessions" className="space-y-4">
+            <div className="space-y-3">
+              {sessions.map(s => (
+                <Card key={s.id} className="border-border">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Video className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm text-foreground">
+                            {s.topic || "Guidance Session"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {s.requested_date} at {s.requested_time} · {s.duration_minutes}min
+                          </p>
+                          {s.company_name && (
+                            <Badge variant="outline" className="text-[10px] mt-1">{s.company_name}</Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {s.status === "pending" ? (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => handleSessionAction(s.id, "rejected")} className="text-destructive">
+                              <X className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" onClick={() => handleSessionAction(s.id, "approved")}>
+                              <Check className="h-4 w-4 mr-1" /> Approve
+                            </Button>
+                          </>
+                        ) : (
+                          <Badge variant={s.status === "approved" ? "default" : "destructive"}>
+                            {s.status}
+                          </Badge>
+                        )}
+                        {s.meet_link && (
+                          <a href={s.meet_link} target="_blank" rel="noopener noreferrer">
+                            <Button size="sm" variant="outline" className="text-xs">
+                              <Video className="h-3 w-3 mr-1" /> Meet
+                            </Button>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {sessions.length === 0 && (
+                <Card>
+                  <CardContent className="p-8 text-center text-muted-foreground">
+                    No session requests yet.
                   </CardContent>
                 </Card>
               )}

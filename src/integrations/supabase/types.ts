@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_sessions: {
+        Row: {
+          client_id: string
+          company_name: string | null
+          created_at: string
+          duration_minutes: number
+          id: string
+          meet_link: string | null
+          mentor_id: string
+          mentor_notes: string | null
+          requested_date: string
+          requested_time: string
+          status: string
+          topic: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          company_name?: string | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          meet_link?: string | null
+          mentor_id: string
+          mentor_notes?: string | null
+          requested_date: string
+          requested_time: string
+          status?: string
+          topic?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          company_name?: string | null
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          meet_link?: string | null
+          mentor_id?: string
+          mentor_notes?: string | null
+          requested_date?: string
+          requested_time?: string
+          status?: string
+          topic?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      client_companies: {
+        Row: {
+          client_id: string
+          company_name: string
+          created_at: string
+          id: string
+          priority: number
+          target_role: string | null
+        }
+        Insert: {
+          client_id: string
+          company_name: string
+          created_at?: string
+          id?: string
+          priority?: number
+          target_role?: string | null
+        }
+        Update: {
+          client_id?: string
+          company_name?: string
+          created_at?: string
+          id?: string
+          priority?: number
+          target_role?: string | null
+        }
+        Relationships: []
+      }
       daily_tasks: {
         Row: {
           category: string
@@ -197,29 +272,38 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
           created_at: string
           current_skills: string[] | null
           display_name: string | null
           domain: string | null
           id: string
+          meet_link: string | null
+          specializations: string[] | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          bio?: string | null
           created_at?: string
           current_skills?: string[] | null
           display_name?: string | null
           domain?: string | null
           id?: string
+          meet_link?: string | null
+          specializations?: string[] | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          bio?: string | null
           created_at?: string
           current_skills?: string[] | null
           display_name?: string | null
           domain?: string | null
           id?: string
+          meet_link?: string | null
+          specializations?: string[] | null
           updated_at?: string
           user_id?: string
         }
@@ -317,7 +401,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "mentor" | "student"
+      app_role: "mentor" | "student" | "client"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -445,7 +529,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["mentor", "student"],
+      app_role: ["mentor", "student", "client"],
     },
   },
 } as const
