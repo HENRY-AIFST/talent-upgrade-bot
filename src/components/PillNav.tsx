@@ -263,7 +263,7 @@ const PillNav = ({
                 <Link
                   to={item.href}
                   className={`mobile-menu-link${currentActiveHref === item.href ? ' is-active' : ''}`}
-                  onClick={() => { setIsMobileMenuOpen(false); toggleMobileMenu(); }}
+                    onClick={closeMobileMenu}
                 >
                   {item.label}
                 </Link>
@@ -271,7 +271,7 @@ const PillNav = ({
                 <a
                   href={item.href}
                   className={`mobile-menu-link${currentActiveHref === item.href ? ' is-active' : ''}`}
-                  onClick={() => { setIsMobileMenuOpen(false); toggleMobileMenu(); }}
+                  onClick={closeMobileMenu}
                 >
                   {item.label}
                 </a>
