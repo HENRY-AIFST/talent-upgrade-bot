@@ -7,9 +7,7 @@ import { Compass, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
 import { useNavigate } from "react-router-dom";
-import PillNav from "@/components/PillNav";
-import logoImg from "@/assets/logo.png";
-import ThemeToggle from "@/components/ThemeToggle";
+import AppLayout from "@/components/AppLayout";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -81,26 +79,7 @@ const Auth = () => {
         />
       </div>
 
-      {/* PillNav */}
-      <div className="relative z-10">
-        <PillNav
-          logo={logoImg}
-          logoAlt="SkillBridge"
-          items={[
-            { label: 'Home', href: '/' },
-            { label: 'Sign In', href: '/auth' },
-          ]}
-          ease="power2.easeOut"
-          baseColor="hsl(var(--card))"
-          pillColor="hsl(var(--primary))"
-          hoveredPillTextColor="hsl(var(--foreground))"
-          pillTextColor="hsl(var(--primary-foreground))"
-          initialLoadAnimation={false}
-        />
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-      </div>
+      <AppLayout />
 
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-8 relative z-10">
