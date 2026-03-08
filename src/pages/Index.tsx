@@ -131,7 +131,7 @@ const Index = () => {
       </div>
 
       {/* Main */}
-      <main className="container max-w-5xl mx-auto px-4 py-8 relative z-10">
+      <main className="container max-w-5xl mx-auto px-4 pt-12 pb-8 relative z-10">
         {view === "compare" ? (
           <RoleComparison analyses={compareData} onBack={() => setView("input")} />
         ) : view === "results" && result ? (
