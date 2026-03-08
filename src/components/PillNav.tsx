@@ -239,6 +239,11 @@ const PillNav = ({
         </button>
       </nav>
 
+      <div
+        className={`mobile-menu-backdrop mobile-only${isMobileMenuOpen ? ' is-open' : ''}`}
+        onClick={toggleMobileMenu}
+      />
+
       <div className="mobile-menu-popover mobile-only" ref={mobileMenuRef} style={cssVars}>
         <ul className="mobile-menu-list">
           {items.map((item, i) => (
@@ -247,7 +252,7 @@ const PillNav = ({
                 <Link
                   to={item.href}
                   className={`mobile-menu-link${activeHref === item.href ? ' is-active' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => { setIsMobileMenuOpen(false); toggleMobileMenu(); }}
                 >
                   {item.label}
                 </Link>
@@ -255,7 +260,7 @@ const PillNav = ({
                 <a
                   href={item.href}
                   className={`mobile-menu-link${activeHref === item.href ? ' is-active' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => { setIsMobileMenuOpen(false); toggleMobileMenu(); }}
                 >
                   {item.label}
                 </a>
