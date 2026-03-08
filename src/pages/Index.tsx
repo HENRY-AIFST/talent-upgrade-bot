@@ -10,7 +10,7 @@ import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Compass, LogOut, User, TrendingUp, Building2 } from "lucide-react";
+import { Compass, LogOut, User, Users, TrendingUp, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
