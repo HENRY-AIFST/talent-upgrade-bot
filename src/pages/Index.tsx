@@ -11,12 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 import { LogOut } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "@/components/ThemeToggle";
 import NotificationBell from "@/components/NotificationBell";
 import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
-import PillNav from "@/components/PillNav";
-import logoImg from "@/assets/logo.png";
+import AppLayout from "@/components/AppLayout";
 
 type View = "input" | "results" | "compare";
 
@@ -96,39 +94,19 @@ const Index = () => {
           pixelRatio={1}
         />
       </div>
-      {/* PillNav Header */}
-      <div className="relative z-10">
-        <PillNav
-          logo={logoImg}
-          logoAlt="SkillBridge"
-          items={[
-            { label: 'Home', href: '/' },
-            ...(user ? [
-              { label: 'My Hub', href: '/client' },
-              { label: 'Mentor', href: '/mentor' },
-              { label: 'Placement', href: '/placement' },
-              { label: 'Progress', href: '/progress' },
-            ] : []),
-            ...(!user ? [{ label: 'Sign In', href: '/auth' }] : []),
-          ]}
-          activeHref={undefined}
-          ease="power2.easeOut"
-          baseColor="hsl(var(--card))"
-          pillColor="hsl(var(--primary))"
-          hoveredPillTextColor="hsl(var(--foreground))"
-          pillTextColor="hsl(var(--primary-foreground))"
-          initialLoadAnimation={true}
-        />
-        <div className="absolute top-4 right-4 flex items-center gap-2">
-          <ThemeToggle />
-          {user && <NotificationBell />}
-          {user && (
-            <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground hover:text-foreground">
-              <LogOut className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </div>
+      <AppLayout
+        initialLoadAnimation={true}
+        rightActions={
+          <>
+            {user && <NotificationBell />}
+            {user && (
+              <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground hover:text-foreground">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            )}
+          </>
+        }
+      />
 
       {/* Main */}
       <main className="container max-w-5xl mx-auto px-4 pt-12 pb-8 relative z-10">
