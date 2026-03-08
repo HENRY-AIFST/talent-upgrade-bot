@@ -252,7 +252,7 @@ const PillNav = ({
 
       <div
         className={`mobile-menu-backdrop mobile-only${isMobileMenuOpen ? ' is-open' : ''}`}
-        onClick={toggleMobileMenu}
+        onClick={closeMobileMenu}
       />
 
       <div className="mobile-menu-popover mobile-only" ref={mobileMenuRef} style={cssVars}>
