@@ -132,15 +132,13 @@ const PillNav = ({
     logoTweenRef.current = gsap.to(img, { rotate: 360, duration: 0.2, ease, overwrite: 'auto' });
   };
 
-  const toggleMobileMenu = () => {
-    const newState = !isMobileMenuOpen;
-    setIsMobileMenuOpen(newState);
+  const animateMobileMenu = (open: boolean) => {
     const hamburger = hamburgerRef.current;
     const menu = mobileMenuRef.current;
 
     if (hamburger) {
       const lines = hamburger.querySelectorAll('.hamburger-line');
-      if (newState) {
+      if (open) {
         gsap.to(lines[0], { rotation: 45, y: 3, duration: 0.3, ease });
         gsap.to(lines[1], { rotation: -45, y: -3, duration: 0.3, ease });
       } else {
@@ -150,7 +148,7 @@ const PillNav = ({
     }
 
     if (menu) {
-      if (newState) {
+      if (open) {
         gsap.set(menu, { visibility: 'visible' });
         gsap.fromTo(menu, { opacity: 0, y: 10, scaleY: 1 }, { opacity: 1, y: 0, scaleY: 1, duration: 0.3, ease, transformOrigin: 'top center' });
       } else {
@@ -158,6 +156,17 @@ const PillNav = ({
       }
     }
     onMobileMenuClick?.();
+  };
+
+  const toggleMobileMenu = () => {
+    const newState = !isMobileMenuOpen;
+    setIsMobileMenuOpen(newState);
+    animateMobileMenu(newState);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+    animateMobileMenu(false);
   };
 
   const isExternalLink = (href: string) =>
