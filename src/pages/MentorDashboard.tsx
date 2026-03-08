@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2 } from "lucide-react";
+import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import Particles from "@/components/Particles";
 
@@ -37,12 +37,27 @@ interface MentorTask {
   created_at: string;
 }
 
+interface BookingSession {
+  id: string;
+  client_id: string;
+  requested_date: string;
+  requested_time: string;
+  duration_minutes: number;
+  status: string;
+  topic: string | null;
+  company_name: string | null;
+  meet_link: string | null;
+  mentor_notes: string | null;
+  created_at: string;
+}
+
 const MentorDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [students, setStudents] = useState<Student[]>([]);
   const [tasks, setTasks] = useState<MentorTask[]>([]);
+  const [sessions, setSessions] = useState<BookingSession[]>([]);
   const [isMentor, setIsMentor] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
