@@ -136,6 +136,11 @@
   will-change: transform, opacity;
 }
 
+.pill.is-active {
+  background: var(--base, #000);
+  color: var(--hover-text, #fff);
+}
+
 .pill.is-active::after {
   content: '';
   position: absolute;
@@ -147,6 +152,11 @@
   background: var(--base, #000);
   border-radius: 50px;
   z-index: 4;
+}
+
+.mobile-menu-popover .mobile-menu-link.is-active {
+  background-color: var(--base);
+  color: var(--hover-text, #fff);
 }
 
 .desktop-only {

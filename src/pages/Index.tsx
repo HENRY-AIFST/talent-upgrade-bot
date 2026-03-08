@@ -111,7 +111,7 @@ const Index = () => {
             ] : []),
             ...(!user ? [{ label: 'Sign In', href: '/auth' }] : []),
           ]}
-          activeHref="/"
+          activeHref={undefined}
           ease="power2.easeOut"
           baseColor="hsl(var(--card))"
           pillColor="hsl(var(--primary))"
