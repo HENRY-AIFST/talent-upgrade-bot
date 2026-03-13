@@ -106,7 +106,13 @@ const Particles = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const renderer = new Renderer({ dpr: pixelRatio, depth: false, alpha: true });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({ dpr: pixelRatio, depth: false, alpha: true });
+    } catch (e) {
+      console.warn('WebGL not available, skipping particles');
+      return;
+    }
     const gl = renderer.gl;
     container.appendChild(gl.canvas);
     gl.clearColor(0, 0, 0, 0);
