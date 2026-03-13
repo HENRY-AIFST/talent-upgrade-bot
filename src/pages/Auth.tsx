@@ -20,8 +20,6 @@ const Auth = () => {
   const [showReset, setShowReset] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
