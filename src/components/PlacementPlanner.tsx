@@ -3,9 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Building2, CalendarDays, CheckCircle2, Circle, Loader2, Trophy, Clock, BookOpen, Code, Users, RotateCcw } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, Building2, RotateCcw } from "lucide-react";
+import { motion } from "framer-motion";
+import PlanForm from "@/components/placement/PlanForm";
+import ExistingPlans from "@/components/placement/ExistingPlans";
+import PlanProgress from "@/components/placement/PlanProgress";
+import PhaseCards from "@/components/placement/PhaseCards";
+import DaySelector from "@/components/placement/DaySelector";
+import PlanExport from "@/components/placement/PlanExport";
 
 interface DailyTask {
   day: number;
@@ -29,22 +34,6 @@ interface SavedTask {
   category: string;
   is_completed: boolean;
 }
-
-const POPULAR_COMPANIES = ["Google", "Amazon", "Microsoft", "Meta", "Apple", "Netflix", "Uber", "Stripe", "Airbnb", "Tesla"];
-
-const CATEGORY_ICONS: Record<string, any> = {
-  study: BookOpen,
-  practice: Code,
-  mock: Users,
-  review: RotateCcw,
-};
-
-const CATEGORY_COLORS: Record<string, string> = {
-  study: "text-primary",
-  practice: "text-accent",
-  mock: "text-chart-3",
-  review: "text-chart-4",
-};
 
 interface PlacementPlannerProps {
   onBack: () => void;
@@ -100,7 +89,6 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
 
       setPlan(data as PlacementPlan);
 
-      // Save plan to DB
       if (user) {
         const { data: savedPlan, error: saveErr } = await supabase
           .from("placement_plans")
@@ -111,7 +99,6 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
         if (saveErr) throw saveErr;
         setSavedPlanId(savedPlan.id);
 
-        // Save daily tasks
         const tasks = (data as PlacementPlan).dailyTasks.map((t) => ({
           plan_id: savedPlan.id,
           user_id: user.id,
@@ -127,6 +114,8 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
 
         loadExistingPlans();
       }
+
+      toast({ title: "Plan Generated! 🎉", description: `Your ${totalDays}-day plan for ${companyName} is ready.` });
     } catch (e: any) {
       toast({ title: "Generation Failed", description: e.message, variant: "destructive" });
     } finally {
@@ -157,237 +146,70 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
 
   const completedCount = savedTasks.filter((t) => t.is_completed).length;
   const progressPercent = savedTasks.length > 0 ? Math.round((completedCount / savedTasks.length) * 100) : 0;
-  const todayTasks = savedTasks.filter((t) => t.day_number === selectedDay);
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
-      <Button variant="ghost" onClick={onBack} className="text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
-      </Button>
+    <div className="space-y-6 max-w-4xl mx-auto px-4 py-6">
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" onClick={onBack} className="text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+        {plan && (
+          <PlanExport plan={plan} companyName={companyName} targetRole={targetRole} totalDays={totalDays} />
+        )}
+      </div>
 
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-xl bg-accent/20 flex items-center justify-center">
-          <Building2 className="h-5 w-5 text-accent" />
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-3"
+      >
+        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center shadow-[var(--shadow-glow)]">
+          <Building2 className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h2 className="font-display text-2xl font-bold text-foreground">Placement Planner</h2>
-          <p className="text-sm text-muted-foreground">Company-specific preparation roadmap</p>
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground">Placement Planner</h2>
+          <p className="text-sm text-muted-foreground">AI-powered company-specific preparation roadmap</p>
         </div>
-      </div>
+      </motion.div>
 
       {!plan ? (
         <div className="space-y-6">
-          {/* Existing plans */}
-          {existingPlans.length > 0 && (
-            <div className="gradient-card rounded-xl p-5 border border-border shadow-card">
-              <h3 className="font-display font-semibold text-foreground mb-3">Your Plans</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {existingPlans.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => handleLoadPlan(p)}
-                    className="text-left p-3 rounded-lg border border-border hover:border-primary/50 transition-colors bg-card"
-                  >
-                    <p className="font-medium text-foreground text-sm">{p.company_name}</p>
-                    <p className="text-xs text-muted-foreground">{p.target_role} · {p.total_days} days</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* New plan form */}
-          <div className="gradient-card rounded-xl p-6 border border-border shadow-card space-y-5">
-            <h3 className="font-display font-semibold text-foreground">Create New Plan</h3>
-
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">Target Company</label>
-              <Input
-                placeholder="Type company name..."
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="bg-secondary border-border"
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {POPULAR_COMPANIES.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setCompanyName(c)}
-                    className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                      companyName === c
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/30"
-                    }`}
-                  >
-                    {c}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">Target Role</label>
-              <Input
-                placeholder="e.g. Software Engineer, Data Scientist..."
-                value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
-                className="bg-secondary border-border"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">Preparation Duration</label>
-              <div className="flex gap-2">
-                {[15, 30, 45, 60, 90].map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => setTotalDays(d)}
-                    className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
-                      totalDays === d
-                        ? "border-primary bg-primary/10 text-primary font-medium"
-                        : "border-border text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {d} days
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating}
-              className="w-full gradient-primary text-primary-foreground font-semibold"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Generating Plan...
-                </>
-              ) : (
-                <>
-                  <CalendarDays className="h-4 w-4 mr-2" />
-                  Generate Placement Plan
-                </>
-              )}
-            </Button>
-          </div>
+          <ExistingPlans plans={existingPlans} onLoadPlan={handleLoadPlan} />
+          <PlanForm
+            companyName={companyName}
+            setCompanyName={setCompanyName}
+            targetRole={targetRole}
+            setTargetRole={setTargetRole}
+            totalDays={totalDays}
+            setTotalDays={setTotalDays}
+            isGenerating={isGenerating}
+            onGenerate={handleGenerate}
+          />
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Progress overview */}
-          <div className="gradient-card rounded-xl p-5 border border-border shadow-card">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="font-display font-semibold text-foreground">{companyName} · {targetRole}</h3>
-                <p className="text-sm text-muted-foreground">{plan.summary}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-display font-bold text-primary">{progressPercent}%</p>
-                <p className="text-xs text-muted-foreground">{completedCount}/{savedTasks.length} tasks</p>
-              </div>
-            </div>
-            <Progress value={progressPercent} className="h-2" />
-          </div>
-
-          {/* Phases */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {plan.phases?.map((phase, i) => (
-              <div key={i} className="gradient-card rounded-lg p-4 border border-border shadow-card">
-                <p className="text-xs text-primary font-medium mb-1">{phase.days}</p>
-                <p className="font-display font-semibold text-foreground text-sm">{phase.name}</p>
-                <p className="text-xs text-muted-foreground mt-1">{phase.focus}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Day selector */}
-          <div className="gradient-card rounded-xl p-5 border border-border shadow-card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display font-semibold text-foreground flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-primary" />
-                Daily Tasks
-              </h3>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" disabled={selectedDay <= 1} onClick={() => setSelectedDay((d) => d - 1)}>
-                  ←
-                </Button>
-                <span className="text-sm font-medium text-foreground min-w-[80px] text-center">Day {selectedDay}</span>
-                <Button variant="ghost" size="sm" disabled={selectedDay >= totalDays} onClick={() => setSelectedDay((d) => d + 1)}>
-                  →
-                </Button>
-              </div>
-            </div>
-
-            {/* Day grid - quick jump */}
-            <div className="flex flex-wrap gap-1 mb-4 max-h-20 overflow-y-auto">
-              {Array.from({ length: totalDays }, (_, i) => i + 1).map((d) => {
-                const dayTasks = savedTasks.filter((t) => t.day_number === d);
-                const allDone = dayTasks.length > 0 && dayTasks.every((t) => t.is_completed);
-                const someDone = dayTasks.some((t) => t.is_completed);
-                return (
-                  <button
-                    key={d}
-                    onClick={() => setSelectedDay(d)}
-                    className={`w-7 h-7 text-[10px] rounded-md font-medium transition-colors ${
-                      d === selectedDay
-                        ? "bg-primary text-primary-foreground"
-                        : allDone
-                        ? "bg-primary/20 text-primary"
-                        : someDone
-                        ? "bg-accent/20 text-accent"
-                        : "bg-secondary text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {d}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Tasks for selected day */}
-            <div className="space-y-3">
-              {todayTasks.length > 0 ? todayTasks.map((task) => {
-                const Icon = CATEGORY_ICONS[task.category] || BookOpen;
-                const colorClass = CATEGORY_COLORS[task.category] || "text-primary";
-                return (
-                  <div
-                    key={task.id}
-                    className={`flex gap-3 p-4 rounded-lg border transition-colors ${
-                      task.is_completed
-                        ? "bg-primary/5 border-primary/20"
-                        : "bg-card border-border hover:border-primary/30"
-                    }`}
-                  >
-                    <button onClick={() => toggleTask(task.id, task.is_completed)} className="mt-0.5 shrink-0">
-                      {task.is_completed ? (
-                        <CheckCircle2 className="h-5 w-5 text-primary" />
-                      ) : (
-                        <Circle className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
-                      )}
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Icon className={`h-3.5 w-3.5 ${colorClass}`} />
-                        <span className={`text-[10px] uppercase font-semibold tracking-wider ${colorClass}`}>{task.category}</span>
-                      </div>
-                      <p className={`font-medium text-sm ${task.is_completed ? "line-through text-muted-foreground" : "text-foreground"}`}>
-                        {task.title}
-                      </p>
-                      {task.description && (
-                        <p className="text-xs text-muted-foreground mt-1">{task.description}</p>
-                      )}
-                    </div>
-                  </div>
-                );
-              }) : (
-                <p className="text-sm text-muted-foreground text-center py-6">No tasks for Day {selectedDay}</p>
-              )}
-            </div>
-          </div>
-
-          <Button variant="outline" onClick={() => { setPlan(null); setSavedPlanId(null); setSavedTasks([]); }} className="w-full">
+          <PlanProgress
+            companyName={companyName}
+            targetRole={targetRole}
+            summary={plan.summary}
+            completedCount={completedCount}
+            totalCount={savedTasks.length}
+            progressPercent={progressPercent}
+          />
+          <PhaseCards phases={plan.phases} />
+          <DaySelector
+            totalDays={totalDays}
+            selectedDay={selectedDay}
+            setSelectedDay={setSelectedDay}
+            savedTasks={savedTasks}
+            onToggleTask={toggleTask}
+          />
+          <Button
+            variant="outline"
+            onClick={() => { setPlan(null); setSavedPlanId(null); setSavedTasks([]); }}
+            className="w-full rounded-xl"
+          >
             <RotateCcw className="h-4 w-4 mr-2" />
             Create New Plan
           </Button>
