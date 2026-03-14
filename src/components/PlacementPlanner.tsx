@@ -246,6 +246,7 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
             <RotateCcw className="h-4 w-4 mr-2" />
             Create New Plan
           </Button>
+        </div>
       )}
     </div>
   );
