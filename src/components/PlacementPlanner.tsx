@@ -52,6 +52,8 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
   const [savedTasks, setSavedTasks] = useState<SavedTask[]>([]);
   const [selectedDay, setSelectedDay] = useState(1);
   const [existingPlans, setExistingPlans] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+  const [planStartDate, setPlanStartDate] = useState<Date>(new Date());
 
   useEffect(() => {
     if (user) loadExistingPlans();
