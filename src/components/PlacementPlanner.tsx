@@ -132,6 +132,7 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
     setCompanyName(p.company_name);
     setTargetRole(p.target_role);
     setTotalDays(p.total_days);
+    setPlanStartDate(new Date(p.created_at));
     await loadSavedTasks(p.id);
   };
 
