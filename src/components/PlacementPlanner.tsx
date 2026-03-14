@@ -202,17 +202,42 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
             progressPercent={progressPercent}
           />
           <PhaseCards phases={plan.phases} />
-          <DaySelector
-            totalDays={totalDays}
-            selectedDay={selectedDay}
-            setSelectedDay={setSelectedDay}
-            savedTasks={savedTasks}
-            onToggleTask={toggleTask}
-          />
-          <Button
-            variant="outline"
-            onClick={() => { setPlan(null); setSavedPlanId(null); setSavedTasks([]); }}
-            className="w-full rounded-xl"
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === "grid" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              className="rounded-lg"
+            >
+              <LayoutGrid className="h-4 w-4 mr-1" /> Grid
+            </Button>
+            <Button
+              variant={viewMode === "calendar" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("calendar")}
+              className="rounded-lg"
+            >
+              <CalendarDays className="h-4 w-4 mr-1" /> Calendar
+            </Button>
+          </div>
+          {viewMode === "grid" ? (
+            <DaySelector
+              totalDays={totalDays}
+              selectedDay={selectedDay}
+              setSelectedDay={setSelectedDay}
+              savedTasks={savedTasks}
+              onToggleTask={toggleTask}
+            />
+          ) : (
+            <CalendarView
+              totalDays={totalDays}
+              startDate={planStartDate}
+              savedTasks={savedTasks}
+              onToggleTask={toggleTask}
+              selectedDay={selectedDay}
+              setSelectedDay={setSelectedDay}
+            />
+          )}
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             Create New Plan
