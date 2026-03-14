@@ -3,13 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Building2, RotateCcw } from "lucide-react";
+import { ArrowLeft, Building2, RotateCcw, CalendarDays, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 import PlanForm from "@/components/placement/PlanForm";
 import ExistingPlans from "@/components/placement/ExistingPlans";
 import PlanProgress from "@/components/placement/PlanProgress";
 import PhaseCards from "@/components/placement/PhaseCards";
 import DaySelector from "@/components/placement/DaySelector";
+import CalendarView from "@/components/placement/CalendarView";
 import PlanExport from "@/components/placement/PlanExport";
 
 interface DailyTask {
@@ -51,6 +52,8 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
   const [savedTasks, setSavedTasks] = useState<SavedTask[]>([]);
   const [selectedDay, setSelectedDay] = useState(1);
   const [existingPlans, setExistingPlans] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+  const [planStartDate, setPlanStartDate] = useState<Date>(new Date());
 
   useEffect(() => {
     if (user) loadExistingPlans();
@@ -129,6 +132,7 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
     setCompanyName(p.company_name);
     setTargetRole(p.target_role);
     setTotalDays(p.total_days);
+    setPlanStartDate(new Date(p.created_at));
     await loadSavedTasks(p.id);
   };
 
@@ -198,13 +202,42 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
             progressPercent={progressPercent}
           />
           <PhaseCards phases={plan.phases} />
-          <DaySelector
-            totalDays={totalDays}
-            selectedDay={selectedDay}
-            setSelectedDay={setSelectedDay}
-            savedTasks={savedTasks}
-            onToggleTask={toggleTask}
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === "grid" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              className="rounded-lg"
+            >
+              <LayoutGrid className="h-4 w-4 mr-1" /> Grid
+            </Button>
+            <Button
+              variant={viewMode === "calendar" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("calendar")}
+              className="rounded-lg"
+            >
+              <CalendarDays className="h-4 w-4 mr-1" /> Calendar
+            </Button>
+          </div>
+          {viewMode === "grid" ? (
+            <DaySelector
+              totalDays={totalDays}
+              selectedDay={selectedDay}
+              setSelectedDay={setSelectedDay}
+              savedTasks={savedTasks}
+              onToggleTask={toggleTask}
+            />
+          ) : (
+            <CalendarView
+              totalDays={totalDays}
+              startDate={planStartDate}
+              savedTasks={savedTasks}
+              onToggleTask={toggleTask}
+              selectedDay={selectedDay}
+              setSelectedDay={setSelectedDay}
+            />
+          )}
           <Button
             variant="outline"
             onClick={() => { setPlan(null); setSavedPlanId(null); setSavedTasks([]); }}
