@@ -3,13 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Building2, RotateCcw } from "lucide-react";
+import { ArrowLeft, Building2, RotateCcw, CalendarDays, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 import PlanForm from "@/components/placement/PlanForm";
 import ExistingPlans from "@/components/placement/ExistingPlans";
 import PlanProgress from "@/components/placement/PlanProgress";
 import PhaseCards from "@/components/placement/PhaseCards";
 import DaySelector from "@/components/placement/DaySelector";
+import CalendarView from "@/components/placement/CalendarView";
 import PlanExport from "@/components/placement/PlanExport";
 
 interface DailyTask {
