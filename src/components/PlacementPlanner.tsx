@@ -238,11 +238,14 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
               setSelectedDay={setSelectedDay}
             />
           )}
+          <Button
+            variant="outline"
+            onClick={() => { setPlan(null); setSavedPlanId(null); setSavedTasks([]); }}
+            className="w-full rounded-xl"
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             Create New Plan
           </Button>
-        </div>
       )}
     </div>
   );
