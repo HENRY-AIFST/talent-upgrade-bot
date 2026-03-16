@@ -54,6 +54,7 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
   const [isAtsLoading, setIsAtsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     onFormChange?.(skills, targetRole);
