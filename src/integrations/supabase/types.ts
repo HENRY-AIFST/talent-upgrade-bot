@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      ats_scores: {
+        Row: {
+          ats_score: number
+          created_at: string
+          experience_relevance: number
+          file_name: string | null
+          format_score: number
+          id: string
+          improvements: string[] | null
+          keyword_match: number
+          missing_keywords: string[] | null
+          section_analysis: Json | null
+          strengths: string[] | null
+          summary: string | null
+          target_role: string | null
+          user_id: string
+        }
+        Insert: {
+          ats_score?: number
+          created_at?: string
+          experience_relevance?: number
+          file_name?: string | null
+          format_score?: number
+          id?: string
+          improvements?: string[] | null
+          keyword_match?: number
+          missing_keywords?: string[] | null
+          section_analysis?: Json | null
+          strengths?: string[] | null
+          summary?: string | null
+          target_role?: string | null
+          user_id: string
+        }
+        Update: {
+          ats_score?: number
+          created_at?: string
+          experience_relevance?: number
+          file_name?: string | null
+          format_score?: number
+          id?: string
+          improvements?: string[] | null
+          keyword_match?: number
+          missing_keywords?: string[] | null
+          section_analysis?: Json | null
+          strengths?: string[] | null
+          summary?: string | null
+          target_role?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       booking_sessions: {
         Row: {
           client_id: string
