@@ -472,6 +472,9 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
               <span>Proven Pathways (Millions of Data Points), personalized, Confidential & Secure</span>
             </div>
           </motion.div>
+
+          {/* ATS History */}
+          <ATSHistory />
         </div>
       </div>
 
