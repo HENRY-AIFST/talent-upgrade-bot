@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin, ArrowRight, Shield, BarChart3, Bot } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import LinkedInImport from "./LinkedInImport";
 import ATSScoreCard from "./ATSScoreCard";
+import ATSHistory from "./ATSHistory";
 import { motion, AnimatePresence } from "framer-motion";
 
 const POPULAR_ROLES = [
