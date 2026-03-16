@@ -87,7 +87,7 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
     if (file) processFile(file);
   };
 
-  const runATSCheck = async (text: string) => {
+  const runATSCheck = async (text: string, fileName?: string) => {
     setIsAtsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("ats-score", {
@@ -96,6 +96,24 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setAtsResult(data);
+
+      // Save to DB if logged in
+      if (user) {
+        await supabase.from("ats_scores").insert({
+          user_id: user.id,
+          target_role: targetRole || null,
+          file_name: fileName || uploadedFileName || null,
+          ats_score: data.atsScore,
+          keyword_match: data.keywordMatch,
+          format_score: data.formatScore,
+          experience_relevance: data.experienceRelevance,
+          summary: data.summary,
+          strengths: data.strengths || [],
+          improvements: data.improvements || [],
+          missing_keywords: data.missingKeywords || [],
+          section_analysis: data.sectionAnalysis || {},
+        });
+      }
     } catch (err: any) {
       console.error("ATS check failed:", err);
       toast({ title: "ATS Check Failed", description: err.message || "Could not analyze resume.", variant: "destructive" });
