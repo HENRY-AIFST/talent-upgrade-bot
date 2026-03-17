@@ -21,17 +21,33 @@ const POPULAR_ROLES = [
   "Microsoft Cloud Architect",
 ];
 
-const SKILL_EMOJIS: Record<string, string> = {
-  python: "🐍", javascript: "⚡", react: "⚛️", figma: "🎨", sql: "🗃️",
-  agile: "💬", java: "☕", typescript: "📘", node: "🟢", aws: "☁️",
-  docker: "🐳", git: "📂", html: "🌐", css: "🎭", mongodb: "🍃",
-};
+const SUGGESTED_SKILLS = [
+  { name: "Python", icon: "🐍", category: "Languages" },
+  { name: "JavaScript", icon: "⚡", category: "Languages" },
+  { name: "TypeScript", icon: "📘", category: "Languages" },
+  { name: "Java", icon: "☕", category: "Languages" },
+  { name: "React", icon: "⚛️", category: "Frameworks" },
+  { name: "Node.js", icon: "🟢", category: "Frameworks" },
+  { name: "Next.js", icon: "▲", category: "Frameworks" },
+  { name: "Django", icon: "🎸", category: "Frameworks" },
+  { name: "SQL", icon: "🗃️", category: "Data" },
+  { name: "MongoDB", icon: "🍃", category: "Data" },
+  { name: "AWS", icon: "☁️", category: "Cloud" },
+  { name: "Docker", icon: "🐳", category: "DevOps" },
+  { name: "Git", icon: "📂", category: "Tools" },
+  { name: "Figma", icon: "🎨", category: "Design" },
+  { name: "Agile", icon: "💬", category: "Methodology" },
+  { name: "Machine Learning", icon: "🧠", category: "AI/ML" },
+  { name: "TensorFlow", icon: "🔬", category: "AI/ML" },
+  { name: "Kubernetes", icon: "⚙️", category: "DevOps" },
+  { name: "GraphQL", icon: "◈", category: "API" },
+  { name: "Redis", icon: "🔴", category: "Data" },
+];
 
 const getEmoji = (skill: string) => {
   const lower = skill.toLowerCase();
-  for (const [key, emoji] of Object.entries(SKILL_EMOJIS)) {
-    if (lower.includes(key)) return emoji;
-  }
+  const found = SUGGESTED_SKILLS.find(s => lower.includes(s.name.toLowerCase()));
+  if (found) return found.icon;
   return "🔹";
 };
 
