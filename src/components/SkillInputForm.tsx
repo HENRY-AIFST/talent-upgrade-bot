@@ -522,6 +522,29 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
         </div>
       </div>
 
+      {/* Step Indicator */}
+      <div className="flex items-center justify-center gap-2 text-xs font-medium">
+        {[
+          { n: 1, label: "Select Role" },
+          { n: 2, label: "Add Skills" },
+          { n: 3, label: "View Roadmap" },
+        ].map((step, i) => (
+          <div key={step.n} className="flex items-center gap-2">
+            <span className={`flex items-center gap-1.5 ${currentStep >= step.n ? "text-primary" : "text-muted-foreground"}`}>
+              <span className={`h-5 w-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
+                currentStep >= step.n ? "gradient-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+              }`}>
+                {step.n}
+              </span>
+              {step.label}
+            </span>
+            {i < 2 && (
+              <ArrowRight className={`h-3.5 w-3.5 ${currentStep > step.n ? "text-primary" : "text-muted-foreground/30"}`} />
+            )}
+          </div>
+        ))}
+      </div>
+
       {/* Analyze Button */}
       <Button
         onClick={() => onAnalyze({ skills, targetRole, resumeText })}
