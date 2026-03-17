@@ -21,17 +21,33 @@ const POPULAR_ROLES = [
   "Microsoft Cloud Architect",
 ];
 
-const SKILL_EMOJIS: Record<string, string> = {
-  python: "🐍", javascript: "⚡", react: "⚛️", figma: "🎨", sql: "🗃️",
-  agile: "💬", java: "☕", typescript: "📘", node: "🟢", aws: "☁️",
-  docker: "🐳", git: "📂", html: "🌐", css: "🎭", mongodb: "🍃",
-};
+const SUGGESTED_SKILLS = [
+  { name: "Python", icon: "🐍", category: "Languages" },
+  { name: "JavaScript", icon: "⚡", category: "Languages" },
+  { name: "TypeScript", icon: "📘", category: "Languages" },
+  { name: "Java", icon: "☕", category: "Languages" },
+  { name: "React", icon: "⚛️", category: "Frameworks" },
+  { name: "Node.js", icon: "🟢", category: "Frameworks" },
+  { name: "Next.js", icon: "▲", category: "Frameworks" },
+  { name: "Django", icon: "🎸", category: "Frameworks" },
+  { name: "SQL", icon: "🗃️", category: "Data" },
+  { name: "MongoDB", icon: "🍃", category: "Data" },
+  { name: "AWS", icon: "☁️", category: "Cloud" },
+  { name: "Docker", icon: "🐳", category: "DevOps" },
+  { name: "Git", icon: "📂", category: "Tools" },
+  { name: "Figma", icon: "🎨", category: "Design" },
+  { name: "Agile", icon: "💬", category: "Methodology" },
+  { name: "Machine Learning", icon: "🧠", category: "AI/ML" },
+  { name: "TensorFlow", icon: "🔬", category: "AI/ML" },
+  { name: "Kubernetes", icon: "⚙️", category: "DevOps" },
+  { name: "GraphQL", icon: "◈", category: "API" },
+  { name: "Redis", icon: "🔴", category: "Data" },
+];
 
 const getEmoji = (skill: string) => {
   const lower = skill.toLowerCase();
-  for (const [key, emoji] of Object.entries(SKILL_EMOJIS)) {
-    if (lower.includes(key)) return emoji;
-  }
+  const found = SUGGESTED_SKILLS.find(s => lower.includes(s.name.toLowerCase()));
+  if (found) return found.icon;
   return "🔹";
 };
 
@@ -188,29 +204,6 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
 
   return (
     <div className="space-y-6">
-      {/* Step Indicator */}
-      <div className="flex items-center justify-center gap-2 text-xs font-medium">
-        {[
-          { n: 1, label: "Select Role" },
-          { n: 2, label: "Add Skills" },
-          { n: 3, label: "View Roadmap" },
-        ].map((step, i) => (
-          <div key={step.n} className="flex items-center gap-2">
-            <span className={`flex items-center gap-1.5 ${currentStep >= step.n ? "text-primary" : "text-muted-foreground"}`}>
-              <span className={`h-5 w-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
-                currentStep >= step.n ? "gradient-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
-              }`}>
-                {step.n}
-              </span>
-              {step.label}
-            </span>
-            {i < 2 && (
-              <ArrowRight className={`h-3.5 w-3.5 ${currentStep > step.n ? "text-primary" : "text-muted-foreground/30"}`} />
-            )}
-          </div>
-        ))}
-      </div>
-
       {/* Trust Banner */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -281,32 +274,83 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
           {/* Skills Input */}
           <AnimatePresence mode="wait">
             {activeTab === "skills" && (
-              <motion.div key="skills" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-3">
-                <label className="text-xs font-medium text-muted-foreground">Skills Input Area</label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Type a skill and press Enter..."
-                    value={skillInput}
-                    onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
-                  />
-                  <Button onClick={addSkill} size="icon" variant="outline" className="border-primary text-primary hover:bg-primary/10">
-                    <Plus className="h-4 w-4" />
-                  </Button>
+              <motion.div key="skills" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-4">
+                <div className="space-y-3">
+                  <label className="text-xs font-medium text-muted-foreground">Type or select skills below</label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Type a skill and press Enter..."
+                      value={skillInput}
+                      onChange={(e) => setSkillInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
+                    />
+                    <Button onClick={addSkill} size="icon" variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Suggested Skills Grid with 3D-style icons */}
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">Quick Add — tap to select multiple</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {SUGGESTED_SKILLS.map((s, i) => {
+                      const isSelected = skills.includes(s.name);
+                      return (
+                        <motion.button
+                          key={s.name}
+                          initial={{ opacity: 0, scale: 0.85 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: i * 0.02 }}
+                          whileHover={{ scale: 1.04, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            if (isSelected) {
+                              removeSkill(s.name);
+                            } else {
+                              setSkills(prev => [...prev, s.name]);
+                            }
+                          }}
+                          className={`relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-left transition-all duration-200 ${
+                            isSelected
+                              ? "border-primary bg-primary/15 text-primary shadow-[0_0_16px_-4px_hsl(var(--primary)/0.5)] ring-1 ring-primary/30"
+                              : "border-border bg-secondary/60 text-foreground hover:border-primary/40 hover:bg-secondary"
+                          }`}
+                        >
+                          <span className="text-xl leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{s.icon}</span>
+                          <span className="text-xs font-medium truncate">{s.name}</span>
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-primary flex items-center justify-center"
+                            >
+                              <CheckCircle className="h-3 w-3 text-primary-foreground" />
+                            </motion.div>
+                          )}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Selected Skills */}
                 {skills.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {skills.map((skill, i) => (
-                      <motion.div key={skill} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }}>
-                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 px-3 py-1.5 text-sm">
-                          {getEmoji(skill)} {skill}
-                          <button onClick={() => removeSkill(skill)} className="ml-2 hover:text-destructive">
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      </motion.div>
-                    ))}
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">{skills.length} skill{skills.length !== 1 ? "s" : ""} selected</p>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill, i) => (
+                        <motion.div key={skill} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }}>
+                          <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 px-3 py-1.5 text-sm">
+                            {getEmoji(skill)} {skill}
+                            <button onClick={() => removeSkill(skill)} className="ml-2 hover:text-destructive">
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </motion.div>
@@ -476,6 +520,29 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
           {/* ATS History */}
           <ATSHistory />
         </div>
+      </div>
+
+      {/* Step Indicator */}
+      <div className="flex items-center justify-center gap-2 text-xs font-medium">
+        {[
+          { n: 1, label: "Select Role" },
+          { n: 2, label: "Add Skills" },
+          { n: 3, label: "View Roadmap" },
+        ].map((step, i) => (
+          <div key={step.n} className="flex items-center gap-2">
+            <span className={`flex items-center gap-1.5 ${currentStep >= step.n ? "text-primary" : "text-muted-foreground"}`}>
+              <span className={`h-5 w-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
+                currentStep >= step.n ? "gradient-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+              }`}>
+                {step.n}
+              </span>
+              {step.label}
+            </span>
+            {i < 2 && (
+              <ArrowRight className={`h-3.5 w-3.5 ${currentStep > step.n ? "text-primary" : "text-muted-foreground/30"}`} />
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Analyze Button */}
