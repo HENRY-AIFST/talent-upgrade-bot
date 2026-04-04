@@ -25,6 +25,7 @@ interface Mentor {
   specializations: string[] | null;
   bio: string | null;
   domain: string | null;
+  one_word_description: string | null;
 }
 
 interface BookingSession {
