@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
+import AuroraBackground from "@/components/AuroraBackground";
 
 interface Student {
   student_id: string;
@@ -238,7 +239,8 @@ const MentorDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
+      <AuroraBackground />
+      <div className="absolute inset-0 z-[1]">
         <Particles
           particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
           particleCount={50}

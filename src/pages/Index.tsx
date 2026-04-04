@@ -15,6 +15,7 @@ import NotificationBell from "@/components/NotificationBell";
 import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
 import AppLayout from "@/components/AppLayout";
+import AuroraBackground from "@/components/AuroraBackground";
 
 type View = "input" | "results" | "compare";
 
@@ -81,7 +82,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
+      <AuroraBackground />
+      <div className="absolute inset-0 z-[1]">
         <Particles
           particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
           particleCount={80}
@@ -117,12 +119,16 @@ const Index = () => {
         ) : (
           <div className="space-y-8">
             {/* Hero */}
-            <div className="text-center space-y-3">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground flex flex-wrap items-center justify-center gap-x-3">
+            <div className="text-center space-y-4 py-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-1 badge-glow">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                AI-Powered Career Intelligence
+              </div>
+              <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground flex flex-wrap items-center justify-center gap-x-3 leading-tight">
                 Bridge Your
                 <RotatingText
                   texts={['Skill Gap', 'Career Path', 'Future Role', 'Dream Job']}
-                  mainClassName="px-3 bg-primary text-primary-foreground overflow-hidden py-1 rounded-lg"
+                  mainClassName="px-3 gradient-hero text-white overflow-hidden py-1 rounded-lg shadow-glow"
                   staggerFrom="last"
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
@@ -133,7 +139,7 @@ const Index = () => {
                   rotationInterval={2000}
                 />
               </h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">
+              <p className="text-muted-foreground max-w-xl mx-auto text-base leading-relaxed">
                 Enter your skills or paste your resume, choose your dream role, and get an AI-powered roadmap to get there.
               </p>
             </div>
@@ -144,7 +150,7 @@ const Index = () => {
             )}
 
             {/* Form Card */}
-            <div className="gradient-card rounded-2xl p-6 md:p-8 border border-border shadow-card">
+            <div className="glass-card gradient-border rounded-2xl p-6 md:p-8 shadow-card">
               <SkillInputForm onAnalyze={handleAnalyze} isLoading={isLoading} onFormChange={(skills, role) => { setFormSkills(skills); setFormRole(role); }} />
             </div>
 
