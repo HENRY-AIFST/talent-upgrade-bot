@@ -339,8 +339,13 @@ const ClientDashboard = () => {
                         )}
                       </div>
                     </div>
+                    {s.denial_reason && (
+                      <p className="text-xs text-destructive mt-2 ml-[52px] border-l-2 border-destructive/30 pl-3">
+                        Reason: {s.denial_reason}
+                      </p>
+                    )}
                     {s.mentor_notes && (
-                      <p className="text-xs text-muted-foreground mt-2 pl-13 border-l-2 border-border ml-5 pl-3">
+                      <p className="text-xs text-muted-foreground mt-2 ml-[52px] border-l-2 border-border pl-3">
                         Mentor: {s.mentor_notes}
                       </p>
                     )}
