@@ -21,6 +21,40 @@ const POPULAR_ROLES = [
   "Microsoft Cloud Architect",
 ];
 
+const ALL_ROLES = [
+  "Frontend Developer", "Backend Developer", "Full Stack Developer", "Software Engineer",
+  "Senior Software Engineer", "Staff Engineer", "Principal Engineer", "DevOps Engineer",
+  "Site Reliability Engineer", "Data Scientist", "Data Engineer", "Data Analyst",
+  "Machine Learning Engineer", "AI Engineer", "Cloud Architect", "Solutions Architect",
+  "Product Manager", "Product Designer", "UX Designer", "UI Designer", "UX Researcher",
+  "Technical Program Manager", "Engineering Manager", "VP of Engineering", "CTO",
+  "Mobile Developer", "iOS Developer", "Android Developer", "React Native Developer",
+  "QA Engineer", "Security Engineer", "Blockchain Developer", "Game Developer",
+  "Embedded Systems Engineer", "Database Administrator", "Network Engineer",
+  "Systems Administrator", "Technical Writer", "Scrum Master", "Business Analyst",
+  ...POPULAR_ROLES,
+];
+
+const ALL_SKILLS = [
+  "Python", "JavaScript", "TypeScript", "Java", "C++", "C#", "Go", "Rust", "Swift", "Kotlin",
+  "Ruby", "PHP", "Scala", "R", "MATLAB", "Perl", "Dart", "Elixir", "Haskell", "Lua",
+  "React", "Angular", "Vue.js", "Next.js", "Svelte", "Node.js", "Express.js", "Django",
+  "Flask", "Spring Boot", "FastAPI", "Rails", "Laravel", "ASP.NET", "NestJS",
+  "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "DynamoDB", "Cassandra",
+  "AWS", "Azure", "Google Cloud", "Docker", "Kubernetes", "Terraform", "Jenkins", "CI/CD",
+  "Git", "GitHub Actions", "GitLab CI", "Linux", "Nginx", "Apache",
+  "TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "Keras", "OpenCV",
+  "Natural Language Processing", "Computer Vision", "Deep Learning", "Machine Learning",
+  "GraphQL", "REST API", "gRPC", "WebSocket", "Microservices", "Event-Driven Architecture",
+  "Figma", "Sketch", "Adobe XD", "UI Design", "UX Design", "Wireframing", "Prototyping",
+  "Agile", "Scrum", "Kanban", "Jira", "Confluence", "Product Management",
+  "System Design", "Data Structures", "Algorithms", "Design Patterns", "Clean Architecture",
+  "Unit Testing", "Integration Testing", "Cypress", "Jest", "Selenium",
+  "Blockchain", "Solidity", "Web3", "Smart Contracts",
+  "Data Visualization", "Tableau", "Power BI", "D3.js",
+  "Communication", "Leadership", "Problem Solving", "Critical Thinking", "Teamwork",
+];
+
 const SUGGESTED_SKILLS = [
   { name: "Python", icon: "🐍", category: "Languages" },
   { name: "JavaScript", icon: "⚡", category: "Languages" },
