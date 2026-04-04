@@ -231,7 +231,8 @@ const ClientDashboard = () => {
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-foreground">{m.display_name}</h3>
-                        {m.domain && <p className="text-xs text-muted-foreground">{m.domain}</p>}
+                        {m.one_word_description && <Badge variant="secondary" className="mt-0.5">{m.one_word_description}</Badge>}
+                        {m.domain && <p className="text-xs text-muted-foreground mt-0.5">{m.domain}</p>}
                         {m.bio && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.bio}</p>}
                         {m.specializations?.length ? (
                           <div className="flex flex-wrap gap-1 mt-2">

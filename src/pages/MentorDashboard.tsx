@@ -540,6 +540,30 @@ const MentorDashboard = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Deny Reason Modal */}
+        <Dialog open={denyDialogOpen} onOpenChange={setDenyDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Deny Session Request</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              <p className="text-sm text-muted-foreground">Please provide a reason for denying this session request.</p>
+              <Textarea
+                placeholder="Reason for denial..."
+                value={denyReason}
+                onChange={e => setDenyReason(e.target.value)}
+                rows={3}
+              />
+              <div className="flex gap-2 justify-end">
+                <Button variant="outline" onClick={() => { setDenyDialogOpen(false); setDenyReason(""); }}>Cancel</Button>
+                <Button variant="destructive" onClick={handleDenySession} disabled={!denyReason.trim()}>
+                  Confirm Deny
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

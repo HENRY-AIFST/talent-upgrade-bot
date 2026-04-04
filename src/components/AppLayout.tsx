@@ -13,6 +13,8 @@ interface AppLayoutProps {
 const AppLayout = ({ children, initialLoadAnimation = false, rightActions }: AppLayoutProps) => {
   const { user } = useAuth();
 
+  const isAdmin = user?.email === "rahul140706@gmail.com";
+
   const navItems = [
     { label: "Home", href: "/" },
     ...(user
@@ -21,6 +23,7 @@ const AppLayout = ({ children, initialLoadAnimation = false, rightActions }: App
           { label: "Mentor", href: "/mentor" },
           { label: "Placement", href: "/placement" },
           { label: "Progress", href: "/progress" },
+          ...(isAdmin ? [{ label: "Admin", href: "/admin" }] : []),
         ]
       : [{ label: "Sign In", href: "/auth" }]),
   ];
