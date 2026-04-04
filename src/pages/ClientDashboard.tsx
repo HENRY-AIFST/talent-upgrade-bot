@@ -91,7 +91,7 @@ const ClientDashboard = () => {
     const mentorIds = mentorRoles.map(r => r.user_id);
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("user_id, display_name, specializations, bio, domain")
+      .select("user_id, display_name, specializations, bio, domain, one_word_description")
       .in("user_id", mentorIds);
 
     setMentors((profiles as Mentor[]) || []);
