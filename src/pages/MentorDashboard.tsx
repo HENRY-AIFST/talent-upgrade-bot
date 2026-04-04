@@ -503,17 +503,20 @@ const MentorDashboard = () => {
                       <div className="flex items-center gap-2">
                         {s.status === "pending" ? (
                           <>
-                            <Button size="sm" variant="outline" onClick={() => handleSessionAction(s.id, "rejected")} className="text-destructive">
+                            <Button size="sm" variant="outline" onClick={() => { setDenySessionId(s.id); setDenyDialogOpen(true); }} className="text-destructive">
                               <X className="h-4 w-4" />
                             </Button>
-                            <Button size="sm" onClick={() => handleSessionAction(s.id, "approved")}>
+                            <Button size="sm" onClick={() => handleApproveSession(s.id)}>
                               <Check className="h-4 w-4 mr-1" /> Approve
                             </Button>
                           </>
                         ) : (
-                          <Badge variant={s.status === "approved" ? "default" : "destructive"}>
-                            {s.status}
-                          </Badge>
+                          <div className="flex flex-col items-end gap-1">
+                            <Badge variant={s.status === "approved" ? "default" : "destructive"}>
+                              {s.status}
+                            </Badge>
+                            {s.denial_reason && <p className="text-xs text-destructive max-w-[200px] text-right">{s.denial_reason}</p>}
+                          </div>
                         )}
                         {s.meet_link && (
                           <a href={s.meet_link} target="_blank" rel="noopener noreferrer">
