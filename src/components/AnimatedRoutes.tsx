@@ -10,6 +10,7 @@ import MentorDashboard from "@/pages/MentorDashboard";
 import ClientDashboard from "@/pages/ClientDashboard";
 import PlacementPage from "@/pages/PlacementPage";
 import ProgressPage from "@/pages/ProgressPage";
+import AdminDashboard from "@/pages/AdminDashboard";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -21,6 +22,7 @@ const AnimatedRoutes = () => {
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
         <Route path="/shared/:shareId" element={<PageTransition><SharedAnalysis /></PageTransition>} />
+        <Route path="/admin" element={<PageTransition><AdminDashboard /></PageTransition>} />
         <Route path="/mentor" element={<PageTransition><MentorDashboard /></PageTransition>} />
         <Route path="/client" element={<PageTransition><ClientDashboard /></PageTransition>} />
         <Route path="/placement" element={<PageTransition><PlacementPage /></PageTransition>} />

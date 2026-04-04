@@ -25,6 +25,7 @@ interface Mentor {
   specializations: string[] | null;
   bio: string | null;
   domain: string | null;
+  one_word_description: string | null;
 }
 
 interface BookingSession {
@@ -38,6 +39,7 @@ interface BookingSession {
   company_name: string | null;
   meet_link: string | null;
   mentor_notes: string | null;
+  denial_reason: string | null;
   created_at: string;
 }
 
@@ -89,7 +91,7 @@ const ClientDashboard = () => {
     const mentorIds = mentorRoles.map(r => r.user_id);
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("user_id, display_name, specializations, bio, domain")
+      .select("user_id, display_name, specializations, bio, domain, one_word_description")
       .in("user_id", mentorIds);
 
     setMentors((profiles as Mentor[]) || []);
@@ -166,7 +168,7 @@ const ClientDashboard = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved": return <Badge className="bg-primary/20 text-primary border-0"><CheckCircle2 className="h-3 w-3 mr-1" /> Approved</Badge>;
-      case "rejected": return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" /> Rejected</Badge>;
+      case "rejected": case "denied": return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" /> Denied</Badge>;
       default: return <Badge variant="secondary"><CircleDot className="h-3 w-3 mr-1" /> Pending</Badge>;
     }
   };
@@ -229,7 +231,8 @@ const ClientDashboard = () => {
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-foreground">{m.display_name}</h3>
-                        {m.domain && <p className="text-xs text-muted-foreground">{m.domain}</p>}
+                        {m.one_word_description && <Badge variant="secondary" className="mt-0.5">{m.one_word_description}</Badge>}
+                        {m.domain && <p className="text-xs text-muted-foreground mt-0.5">{m.domain}</p>}
                         {m.bio && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.bio}</p>}
                         {m.specializations?.length ? (
                           <div className="flex flex-wrap gap-1 mt-2">
@@ -338,8 +341,13 @@ const ClientDashboard = () => {
                         )}
                       </div>
                     </div>
+                    {s.denial_reason && (
+                      <p className="text-xs text-destructive mt-2 ml-[52px] border-l-2 border-destructive/30 pl-3">
+                        Reason: {s.denial_reason}
+                      </p>
+                    )}
                     {s.mentor_notes && (
-                      <p className="text-xs text-muted-foreground mt-2 pl-13 border-l-2 border-border ml-5 pl-3">
+                      <p className="text-xs text-muted-foreground mt-2 ml-[52px] border-l-2 border-border pl-3">
                         Mentor: {s.mentor_notes}
                       </p>
                     )}

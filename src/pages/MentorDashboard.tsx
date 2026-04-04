@@ -48,6 +48,7 @@ interface BookingSession {
   company_name: string | null;
   meet_link: string | null;
   mentor_notes: string | null;
+  denial_reason: string | null;
   created_at: string;
 }
 
@@ -63,6 +64,9 @@ const MentorDashboard = () => {
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [newTask, setNewTask] = useState({ title: "", description: "", category: "study", student_id: "", due_date: "" });
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [denyDialogOpen, setDenyDialogOpen] = useState(false);
+  const [denySessionId, setDenySessionId] = useState<string | null>(null);
+  const [denyReason, setDenyReason] = useState("");
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
@@ -95,20 +99,33 @@ const MentorDashboard = () => {
     setSessions((data as BookingSession[]) || []);
   };
 
-  const handleSessionAction = async (sessionId: string, action: "approved" | "rejected") => {
-    const meetLink = action === "approved"
-      ? `https://meet.google.com/${crypto.randomUUID().slice(0, 3)}-${crypto.randomUUID().slice(0, 4)}-${crypto.randomUUID().slice(0, 3)}`
-      : null;
-    
+  const handleApproveSession = async (sessionId: string) => {
+    const meetLink = `https://meet.google.com/${crypto.randomUUID().slice(0, 3)}-${crypto.randomUUID().slice(0, 4)}-${crypto.randomUUID().slice(0, 3)}`;
     const { error } = await supabase
       .from("booking_sessions")
-      .update({ status: action, meet_link: meetLink })
+      .update({ status: "approved", meet_link: meetLink })
       .eq("id", sessionId);
-    
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: action === "approved" ? "Session approved! Meet link generated." : "Session rejected." });
+      toast({ title: "Session approved! Meet link generated." });
+      fetchSessions();
+    }
+  };
+
+  const handleDenySession = async () => {
+    if (!denySessionId || !denyReason.trim()) return;
+    const { error } = await supabase
+      .from("booking_sessions")
+      .update({ status: "denied", denial_reason: denyReason.trim() })
+      .eq("id", denySessionId);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Session denied." });
+      setDenyDialogOpen(false);
+      setDenySessionId(null);
+      setDenyReason("");
       fetchSessions();
     }
   };
@@ -486,17 +503,20 @@ const MentorDashboard = () => {
                       <div className="flex items-center gap-2">
                         {s.status === "pending" ? (
                           <>
-                            <Button size="sm" variant="outline" onClick={() => handleSessionAction(s.id, "rejected")} className="text-destructive">
+                            <Button size="sm" variant="outline" onClick={() => { setDenySessionId(s.id); setDenyDialogOpen(true); }} className="text-destructive">
                               <X className="h-4 w-4" />
                             </Button>
-                            <Button size="sm" onClick={() => handleSessionAction(s.id, "approved")}>
+                            <Button size="sm" onClick={() => handleApproveSession(s.id)}>
                               <Check className="h-4 w-4 mr-1" /> Approve
                             </Button>
                           </>
                         ) : (
-                          <Badge variant={s.status === "approved" ? "default" : "destructive"}>
-                            {s.status}
-                          </Badge>
+                          <div className="flex flex-col items-end gap-1">
+                            <Badge variant={s.status === "approved" ? "default" : "destructive"}>
+                              {s.status}
+                            </Badge>
+                            {s.denial_reason && <p className="text-xs text-destructive max-w-[200px] text-right">{s.denial_reason}</p>}
+                          </div>
                         )}
                         {s.meet_link && (
                           <a href={s.meet_link} target="_blank" rel="noopener noreferrer">
@@ -520,6 +540,30 @@ const MentorDashboard = () => {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Deny Reason Modal */}
+        <Dialog open={denyDialogOpen} onOpenChange={setDenyDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Deny Session Request</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              <p className="text-sm text-muted-foreground">Please provide a reason for denying this session request.</p>
+              <Textarea
+                placeholder="Reason for denial..."
+                value={denyReason}
+                onChange={e => setDenyReason(e.target.value)}
+                rows={3}
+              />
+              <div className="flex gap-2 justify-end">
+                <Button variant="outline" onClick={() => { setDenyDialogOpen(false); setDenyReason(""); }}>Cancel</Button>
+                <Button variant="destructive" onClick={handleDenySession} disabled={!denyReason.trim()}>
+                  Confirm Deny
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

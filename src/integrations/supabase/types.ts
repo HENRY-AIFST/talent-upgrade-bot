@@ -70,6 +70,7 @@ export type Database = {
           client_id: string
           company_name: string | null
           created_at: string
+          denial_reason: string | null
           duration_minutes: number
           id: string
           meet_link: string | null
@@ -85,6 +86,7 @@ export type Database = {
           client_id: string
           company_name?: string | null
           created_at?: string
+          denial_reason?: string | null
           duration_minutes?: number
           id?: string
           meet_link?: string | null
@@ -100,6 +102,7 @@ export type Database = {
           client_id?: string
           company_name?: string | null
           created_at?: string
+          denial_reason?: string | null
           duration_minutes?: number
           id?: string
           meet_link?: string | null
@@ -330,6 +333,7 @@ export type Database = {
           domain: string | null
           id: string
           meet_link: string | null
+          one_word_description: string | null
           specializations: string[] | null
           updated_at: string
           user_id: string
@@ -342,6 +346,7 @@ export type Database = {
           domain?: string | null
           id?: string
           meet_link?: string | null
+          one_word_description?: string | null
           specializations?: string[] | null
           updated_at?: string
           user_id: string
@@ -354,6 +359,7 @@ export type Database = {
           domain?: string | null
           id?: string
           meet_link?: string | null
+          one_word_description?: string | null
           specializations?: string[] | null
           updated_at?: string
           user_id?: string
