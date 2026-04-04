@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { TargetSkill } from "@/types/analysis";
 
 interface SkillBarChartProps {
@@ -30,17 +30,28 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const SkillBarChart = ({ targetSkills }: SkillBarChartProps) => {
-  const data = targetSkills.slice(0, 10).map((s) => ({
-    skill: s.name.length > 18 ? s.name.slice(0, 18) + "…" : s.name,
+  const data = targetSkills.slice(0, 8).map((s) => ({
+    skill: s.name.length > 14 ? s.name.slice(0, 14) + "…" : s.name,
     current: s.currentLevel,
     required: s.level,
     gap: Math.max(0, s.level - s.currentLevel),
   }));
 
   return (
-    <div className="w-full h-[380px]">
+    <div className="w-full space-y-3">
+      <div className="flex items-center justify-center gap-3 text-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2dd4bf]/35 bg-[#2dd4bf]/10 px-2.5 py-1 text-[#8ff8ea]">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#2dd4bf]" />
+          Your Level
+        </span>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f4b84a]/35 bg-[#f4b84a]/10 px-2.5 py-1 text-[#ffd48a]">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#f4b84a]" />
+          Required Level
+        </span>
+      </div>
+      <div className="h-[340px] w-full">
       <ResponsiveContainer>
-        <BarChart data={data} margin={{ top: 10, right: 24, left: 4, bottom: 65 }} barGap={2} barCategoryGap="20%">
+        <BarChart data={data} margin={{ top: 8, right: 12, left: 8, bottom: 78 }} barGap={6} barCategoryGap="28%">
           <defs>
             <linearGradient id="currentGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="hsl(174, 72%, 55%)" stopOpacity={1} />
@@ -55,7 +66,7 @@ const SkillBarChart = ({ targetSkills }: SkillBarChartProps) => {
           <XAxis
             dataKey="skill"
             tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontWeight: 500 }}
-            angle={-40}
+            angle={-30}
             textAnchor="end"
             interval={0}
             axisLine={{ stroke: "hsl(var(--border))" }}
@@ -71,15 +82,11 @@ const SkillBarChart = ({ targetSkills }: SkillBarChartProps) => {
           />
           <ReferenceLine y={5} stroke="hsl(var(--muted-foreground))" strokeDasharray="6 4" strokeOpacity={0.3} />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "hsl(var(--muted) / 0.3)" }} />
-          <Legend
-            wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
-            iconType="circle"
-            iconSize={8}
-          />
-          <Bar dataKey="current" name="Your Level" fill="url(#currentGrad)" radius={[6, 6, 0, 0]} maxBarSize={36} />
-          <Bar dataKey="required" name="Required Level" fill="url(#requiredGrad)" radius={[6, 6, 0, 0]} maxBarSize={36} />
+          <Bar dataKey="current" name="Your Level" fill="url(#currentGrad)" radius={[6, 6, 0, 0]} maxBarSize={26} />
+          <Bar dataKey="required" name="Required Level" fill="url(#requiredGrad)" radius={[6, 6, 0, 0]} maxBarSize={26} />
         </BarChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 };

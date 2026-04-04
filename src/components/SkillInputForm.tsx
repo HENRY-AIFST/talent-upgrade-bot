@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin, ArrowRight, Shield, BarChart3, Bot, Search } from "lucide-react";
+import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin, ArrowRight, Shield, BarChart3, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -237,28 +237,25 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       {/* Trust Banner */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass-card rounded-xl px-4 py-2.5 flex items-center justify-center gap-3 text-xs text-muted-foreground"
+        className="rounded-xl px-4 py-2.5 flex items-center justify-center gap-3 text-xs text-muted-foreground border border-white/10 bg-white/[0.03]"
       >
         <Sparkles className="h-3.5 w-3.5 text-primary" />
-        <span>Powered by Leading AI & Real-World Career Data</span>
-        <span className="text-primary font-bold">G</span>
-        <span className="text-destructive font-bold">N</span>
-        <span className="text-accent font-bold">A</span>
+        <span>Powered by Leading AI and Real-World Career Data</span>
       </motion.div>
 
       {/* Main Content: Form + Sidebar */}
-      <div className="flex flex-col lg:flex-row gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
         {/* Form Section */}
-        <div className="flex-1 space-y-5">
+        <div className="lg:col-span-8 space-y-8">
           {/* Target Role */}
-          <div className="space-y-3">
-            <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <div className="space-y-4 text-left">
+            <label className="flex items-center gap-2 text-xs md:text-sm font-semibold uppercase tracking-wider text-foreground/85">
               <Target className="h-4 w-4 text-primary" />
               Target Role Selector
             </label>
@@ -269,7 +266,10 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
               suggestions={ALL_ROLES}
               icon={<Search className="h-4 w-4" />}
             />
-            <div className="flex flex-wrap gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold px-2 py-1 rounded bg-secondary/60 border border-border/50">
+                Popular
+              </span>
               {POPULAR_ROLES.map((role) => (
                 <motion.button
                   key={role}
@@ -278,8 +278,8 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
                   onClick={() => setTargetRole(role)}
                   className={`px-3 py-1.5 text-xs rounded-full border transition-all duration-200 ${
                     targetRole === role
-                      ? "border-primary bg-primary/15 text-primary shadow-[0_0_12px_-3px_hsl(var(--primary)/0.4)]"
-                      : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                      ? "border-primary bg-primary/15 text-primary shadow-[0_0_16px_-3px_hsl(var(--primary)/0.45)]"
+                      : "border-border/70 bg-secondary/40 text-muted-foreground hover:border-primary/50 hover:text-foreground"
                   }`}
                 >
                   {role}
@@ -289,21 +289,26 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
           </div>
 
           {/* Tab Toggle */}
-          <div className="flex gap-1 p-1 bg-secondary rounded-xl">
+          <div className="space-y-4 text-left">
+            <label className="block text-xs md:text-sm font-semibold uppercase tracking-wider text-foreground/85">
+              How would you like to add skills?
+            </label>
+            <div className="flex flex-wrap gap-2 rounded-2xl bg-secondary/40 p-2 border border-border/60">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium rounded-lg transition-all ${
+                className={`flex-1 min-w-[130px] flex items-center justify-center gap-1.5 py-2.5 px-3 text-xs font-medium rounded-xl transition-all ${
                   activeTab === tab.key
-                    ? "bg-card text-foreground shadow-card"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-primary/15 border border-primary/35 text-primary shadow-[0_0_18px_-6px_hsl(var(--primary)/0.55)]"
+                    : "bg-card/45 border border-border/60 text-muted-foreground hover:text-foreground hover:border-primary/30"
                 }`}
               >
                 <tab.icon className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <span>{tab.label}</span>
               </button>
             ))}
+            </div>
           </div>
 
           {/* Skills Input */}
@@ -326,7 +331,7 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
                       }}
                       icon={<Search className="h-4 w-4" />}
                     />
-                    <Button onClick={addSkill} size="icon" variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                    <Button onClick={addSkill} size="icon" variant="outline" className="border-primary/60 text-primary hover:bg-primary/10 shadow-[0_0_16px_-8px_hsl(var(--primary)/0.6)]">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
@@ -334,7 +339,10 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
 
                 {/* Suggested Skills Grid with 3D-style icons */}
                 <div className="space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground">Quick Add — tap to select multiple</p>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Suggested Skills</p>
+                    <span className="text-[10px] px-2 py-1 rounded-full bg-primary/12 border border-primary/30 text-primary font-semibold">Based on Role</span>
+                  </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {SUGGESTED_SKILLS.map((s, i) => {
                       const isSelected = skills.includes(s.name);
@@ -356,7 +364,7 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
                           className={`relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-left transition-all duration-200 ${
                             isSelected
                               ? "border-primary bg-primary/15 text-primary shadow-[0_0_16px_-4px_hsl(var(--primary)/0.5)] ring-1 ring-primary/30"
-                              : "border-border bg-secondary/60 text-foreground hover:border-primary/40 hover:bg-secondary"
+                              : "border-border/70 bg-secondary/45 text-foreground hover:border-primary/40 hover:bg-secondary/80"
                           }`}
                         >
                           <span className="text-xl leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{s.icon}</span>
@@ -518,16 +526,68 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
         </div>
 
         {/* Sidebar */}
-        <div className="lg:w-72 space-y-4">
-          {/* AI Assistant Tip */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Analyze Card */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
-            className="glass-card rounded-xl p-4 space-y-2"
+            className="rounded-[1.7rem] p-6 space-y-5 border border-white/15 bg-white/[0.04] backdrop-blur-xl"
+          >
+            <div className="space-y-2">
+              <h3 className="text-lg font-bold text-foreground">Ready to Analyze?</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                We will compare your current skills against industry benchmarks for your target role.
+              </p>
+            </div>
+
+            <Button
+              onClick={() => onAnalyze({ skills, targetRole, resumeText })}
+              disabled={!canSubmit || isLoading || isParsing}
+              className="w-full py-6 rounded-2xl bg-gradient-to-r from-primary via-[#28e6d5] to-[#14c5f1] text-primary-foreground font-display font-semibold text-base shadow-[0_10px_40px_-10px_hsl(var(--primary)/0.65)] hover:scale-[1.015] active:scale-[0.99] transition-all disabled:opacity-40"
+            >
+              {isLoading ? (
+                <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Analyzing Your Skills...</>
+              ) : (
+                <><Sparkles className="h-5 w-5 mr-2" /> Analyze Gap <ArrowRight className="h-4 w-4 ml-1" /></>
+              )}
+            </Button>
+
+            <div className="pt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <Shield className="h-3.5 w-3.5 text-primary" />
+              <span>AI Analysis: 100% Secure and Private</span>
+            </div>
+          </motion.div>
+
+          {/* Pro Tips */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.55 }}
+            className="rounded-[1.5rem] p-5 space-y-4 border border-white/10 bg-white/[0.03] backdrop-blur-xl"
+          >
+            <h4 className="text-sm font-bold text-foreground">Pro Tips</h4>
+            <ul className="space-y-2.5 text-xs text-muted-foreground">
+              <li className="flex gap-2">
+                <span className="text-primary">→</span>
+                <span>Adding more than 10 skills increases accuracy.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-primary">→</span>
+                <span>Specific job titles like "Staff Frontend Engineer" work best.</span>
+              </li>
+            </ul>
+          </motion.div>
+
+          {/* AI Assistant Tip */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.65 }}
+            className="rounded-xl p-4 space-y-2 border border-white/10 bg-white/[0.025]"
           >
             <div className="flex items-center gap-2">
-              <Bot className="h-4 w-4 text-primary" />
+              <Sparkles className="h-4 w-4 text-primary" />
               <span className="text-xs font-bold text-foreground">AI Assistant</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
@@ -544,7 +604,7 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6 }}
-            className="glass-card rounded-xl p-4 space-y-3"
+            className="rounded-xl p-4 space-y-3 border border-white/10 bg-white/[0.025]"
           >
             <p className="text-[11px] font-medium text-muted-foreground">
               <span className="text-foreground font-bold">Trusted Coach</span>, Sarah, 3 Career Changes Guided
@@ -585,24 +645,6 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
           </div>
         ))}
       </div>
-
-      {/* Analyze Button */}
-      <Button
-        onClick={() => onAnalyze({ skills, targetRole, resumeText })}
-        disabled={!canSubmit || isLoading || isParsing}
-        className="w-full gradient-primary text-primary-foreground font-display font-semibold text-base py-6 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-40 animate-pulse-glow"
-      >
-        {isLoading ? (
-          <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Analyzing Your Skills...</>
-        ) : (
-          <><Sparkles className="h-5 w-5 mr-2" /> Analyze Skill Gap</>
-        )}
-      </Button>
-
-      {/* Privacy Note */}
-      <p className="text-center text-[11px] text-muted-foreground flex items-center justify-center gap-1.5">
-        <Shield className="h-3 w-3" /> Your data is 100% private and protected.
-      </p>
     </div>
   );
 };
