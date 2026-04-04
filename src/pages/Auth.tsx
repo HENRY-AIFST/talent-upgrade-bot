@@ -9,6 +9,7 @@ import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
+import AuroraBackground from "@/components/AuroraBackground";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -81,7 +82,8 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
+      <AuroraBackground />
+      <div className="absolute inset-0 z-[1]">
         <Particles
           particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
           particleCount={200}
@@ -97,20 +99,22 @@ const Auth = () => {
 
       <AppLayout />
 
-      <div className="flex-1 flex items-center justify-center px-4">
-        <div className="w-full max-w-sm space-y-8 relative z-10">
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-sm relative z-10">
+          {/* Glass card wrapper */}
+          <div className="glass-card gradient-border rounded-2xl p-8 space-y-8 shadow-card">
           {/* Logo */}
           <div className="text-center space-y-2">
-          <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center shadow-glow mx-auto">
-            <Compass className="h-6 w-6 text-primary-foreground" />
+          <div className="h-14 w-14 rounded-2xl gradient-hero flex items-center justify-center shadow-glow mx-auto">
+            <Compass className="h-7 w-7 text-white" />
           </div>
           <h1 className="font-display font-bold text-2xl text-foreground">SkillBridge</h1>
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5">
+          <p className="text-sm text-muted-foreground flex items-center justify-center gap-1.5 flex-wrap">
             {showReset ? "Reset your password" : isLogin ? "Welcome back" : "Create your account to"}
             {!showReset && (
               <RotatingText
                 texts={['land your dream job', 'bridge skill gaps', 'ace interviews', 'grow your career']}
-                mainClassName="px-1.5 bg-primary text-primary-foreground overflow-hidden py-0.5 rounded-md text-sm"
+                mainClassName="px-1.5 gradient-hero text-white overflow-hidden py-0.5 rounded-md text-sm"
                 staggerFrom="last"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
@@ -234,6 +238,7 @@ const Auth = () => {
             </Button>
           </form>
         )}
+        </div>{/* end glass-card */}
         </div>
       </div>
     </div>

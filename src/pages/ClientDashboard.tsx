@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
+import AuroraBackground from "@/components/AuroraBackground";
 
 interface Mentor {
   user_id: string;
@@ -187,7 +188,8 @@ const ClientDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
+      <AuroraBackground />
+      <div className="absolute inset-0 z-[1]">
         <Particles
           particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
           particleCount={50}
