@@ -38,6 +38,7 @@ interface BookingSession {
   company_name: string | null;
   meet_link: string | null;
   mentor_notes: string | null;
+  denial_reason: string | null;
   created_at: string;
 }
 
