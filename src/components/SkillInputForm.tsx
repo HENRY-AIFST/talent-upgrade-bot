@@ -262,11 +262,12 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
               <Target className="h-4 w-4 text-primary" />
               Target Role Selector
             </label>
-            <Input
-              placeholder="e.g., Senior Software Engineer at [Insert top company example]"
+            <AutocompleteInput
+              placeholder="e.g., Senior Software Engineer at Google"
               value={targetRole}
-              onChange={(e) => setTargetRole(e.target.value)}
-              className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:ring-primary h-11"
+              onChange={setTargetRole}
+              suggestions={ALL_ROLES}
+              icon={<Search className="h-4 w-4" />}
             />
             <div className="flex flex-wrap gap-2">
               {POPULAR_ROLES.map((role) => (
