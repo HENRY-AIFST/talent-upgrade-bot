@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin, ArrowRight, Shield, BarChart3, Bot } from "lucide-react";
+import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin, ArrowRight, Shield, BarChart3, Bot, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import LinkedInImport from "./LinkedInImport";
 import ATSScoreCard from "./ATSScoreCard";
 import ATSHistory from "./ATSHistory";
+import AutocompleteInput from "./AutocompleteInput";
 import { motion, AnimatePresence } from "framer-motion";
 
 const POPULAR_ROLES = [
@@ -19,6 +19,40 @@ const POPULAR_ROLES = [
   "Google ML Engineer",
   "Meta Frontend Developer",
   "Microsoft Cloud Architect",
+];
+
+const ALL_ROLES = [
+  "Frontend Developer", "Backend Developer", "Full Stack Developer", "Software Engineer",
+  "Senior Software Engineer", "Staff Engineer", "Principal Engineer", "DevOps Engineer",
+  "Site Reliability Engineer", "Data Scientist", "Data Engineer", "Data Analyst",
+  "Machine Learning Engineer", "AI Engineer", "Cloud Architect", "Solutions Architect",
+  "Product Manager", "Product Designer", "UX Designer", "UI Designer", "UX Researcher",
+  "Technical Program Manager", "Engineering Manager", "VP of Engineering", "CTO",
+  "Mobile Developer", "iOS Developer", "Android Developer", "React Native Developer",
+  "QA Engineer", "Security Engineer", "Blockchain Developer", "Game Developer",
+  "Embedded Systems Engineer", "Database Administrator", "Network Engineer",
+  "Systems Administrator", "Technical Writer", "Scrum Master", "Business Analyst",
+  ...POPULAR_ROLES,
+];
+
+const ALL_SKILLS = [
+  "Python", "JavaScript", "TypeScript", "Java", "C++", "C#", "Go", "Rust", "Swift", "Kotlin",
+  "Ruby", "PHP", "Scala", "R", "MATLAB", "Perl", "Dart", "Elixir", "Haskell", "Lua",
+  "React", "Angular", "Vue.js", "Next.js", "Svelte", "Node.js", "Express.js", "Django",
+  "Flask", "Spring Boot", "FastAPI", "Rails", "Laravel", "ASP.NET", "NestJS",
+  "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "DynamoDB", "Cassandra",
+  "AWS", "Azure", "Google Cloud", "Docker", "Kubernetes", "Terraform", "Jenkins", "CI/CD",
+  "Git", "GitHub Actions", "GitLab CI", "Linux", "Nginx", "Apache",
+  "TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy", "Keras", "OpenCV",
+  "Natural Language Processing", "Computer Vision", "Deep Learning", "Machine Learning",
+  "GraphQL", "REST API", "gRPC", "WebSocket", "Microservices", "Event-Driven Architecture",
+  "Figma", "Sketch", "Adobe XD", "UI Design", "UX Design", "Wireframing", "Prototyping",
+  "Agile", "Scrum", "Kanban", "Jira", "Confluence", "Product Management",
+  "System Design", "Data Structures", "Algorithms", "Design Patterns", "Clean Architecture",
+  "Unit Testing", "Integration Testing", "Cypress", "Jest", "Selenium",
+  "Blockchain", "Solidity", "Web3", "Smart Contracts",
+  "Data Visualization", "Tableau", "Power BI", "D3.js",
+  "Communication", "Leadership", "Problem Solving", "Critical Thinking", "Teamwork",
 ];
 
 const SUGGESTED_SKILLS = [
@@ -228,11 +262,12 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
               <Target className="h-4 w-4 text-primary" />
               Target Role Selector
             </label>
-            <Input
-              placeholder="e.g., Senior Software Engineer at [Insert top company example]"
+            <AutocompleteInput
+              placeholder="e.g., Senior Software Engineer at Google"
               value={targetRole}
-              onChange={(e) => setTargetRole(e.target.value)}
-              className="bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:ring-primary h-11"
+              onChange={setTargetRole}
+              suggestions={ALL_ROLES}
+              icon={<Search className="h-4 w-4" />}
             />
             <div className="flex flex-wrap gap-2">
               {POPULAR_ROLES.map((role) => (
@@ -278,12 +313,18 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
                 <div className="space-y-3">
                   <label className="text-xs font-medium text-muted-foreground">Type or select skills below</label>
                   <div className="flex gap-2">
-                    <Input
+                    <AutocompleteInput
                       placeholder="Type a skill and press Enter..."
                       value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
+                      onChange={setSkillInput}
+                      suggestions={ALL_SKILLS.filter(s => !skills.includes(s))}
+                      onSelect={(val) => {
+                        if (val && !skills.includes(val)) {
+                          setSkills(prev => [...prev, val]);
+                          setSkillInput("");
+                        }
+                      }}
+                      icon={<Search className="h-4 w-4" />}
                     />
                     <Button onClick={addSkill} size="icon" variant="outline" className="border-primary text-primary hover:bg-primary/10">
                       <Plus className="h-4 w-4" />
