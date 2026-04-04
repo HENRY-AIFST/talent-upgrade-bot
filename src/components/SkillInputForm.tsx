@@ -329,7 +329,6 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
                     <Button onClick={addSkill} size="icon" variant="outline" className="border-primary text-primary hover:bg-primary/10">
                       <Plus className="h-4 w-4" />
                     </Button>
-                    </Button>
                   </div>
                 </div>
 
