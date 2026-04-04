@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin, ArrowRight, Shield, BarChart3, Bot } from "lucide-react";
+import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Linkedin, ArrowRight, Shield, BarChart3, Bot, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import LinkedInImport from "./LinkedInImport";
 import ATSScoreCard from "./ATSScoreCard";
 import ATSHistory from "./ATSHistory";
+import AutocompleteInput from "./AutocompleteInput";
 import { motion, AnimatePresence } from "framer-motion";
 
 const POPULAR_ROLES = [
