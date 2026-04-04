@@ -8,8 +8,8 @@ import { AnalysisResult } from "@/types/analysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { LogOut, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import NotificationBell from "@/components/NotificationBell";
 import Particles from "@/components/Particles";
@@ -94,6 +94,12 @@ const Index = () => {
           pixelRatio={1}
         />
       </div>
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute -top-24 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.28)_0%,rgba(99,102,241,0)_70%)] blur-2xl" />
+        <div className="absolute bottom-0 left-0 h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(16,244,212,0.2)_0%,rgba(16,244,212,0)_72%)] blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.2)_0%,rgba(139,92,246,0)_70%)] blur-3xl" />
+      </div>
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-40 [background-image:radial-gradient(circle,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:24px_24px]" />
       <AppLayout
         initialLoadAnimation={true}
         rightActions={
@@ -109,20 +115,26 @@ const Index = () => {
       />
 
       {/* Main */}
-      <main className="container max-w-5xl mx-auto px-4 pt-12 pb-8 relative z-10">
+      <main className="container max-w-7xl mx-auto px-4 pt-10 pb-12 relative z-10">
         {view === "compare" ? (
           <RoleComparison analyses={compareData} onBack={() => setView("input")} />
         ) : view === "results" && result ? (
           <AnalysisResults result={result} onReset={() => { setView("input"); setResult(null); }} />
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-10">
             {/* Hero */}
-            <div className="text-center space-y-3">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground flex flex-wrap items-center justify-center gap-x-3">
-                Bridge Your
+            <div className="text-center space-y-4 pt-2">
+              <h2 className="font-display text-5xl md:text-7xl font-extrabold text-foreground tracking-tight leading-[0.95]">
+                SkillBridge
+                <span className="block mt-1 bg-gradient-to-r from-primary via-[#60a5fa] to-[#8b5cf6] bg-clip-text text-transparent">
+                  Your Career
+                </span>
+              </h2>
+              <div className="flex items-center justify-center gap-2 text-primary/90">
+                <Sparkles className="h-4 w-4" />
                 <RotatingText
-                  texts={['Skill Gap', 'Career Path', 'Future Role', 'Dream Job']}
-                  mainClassName="px-3 bg-primary text-primary-foreground overflow-hidden py-1 rounded-lg"
+                  texts={['AI Career Roadmaps', 'Smart Skill Gap Insights', 'Faster Job Readiness', 'Personalized Growth Paths']}
+                  mainClassName="px-3 bg-primary/12 border border-primary/25 text-primary overflow-hidden py-1 rounded-lg text-sm"
                   staggerFrom="last"
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
@@ -132,8 +144,8 @@ const Index = () => {
                   transition={{ type: "spring", damping: 30, stiffness: 400 }}
                   rotationInterval={2000}
                 />
-              </h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">
+              </div>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
                 Enter your skills or paste your resume, choose your dream role, and get an AI-powered roadmap to get there.
               </p>
             </div>
@@ -144,8 +156,12 @@ const Index = () => {
             )}
 
             {/* Form Card */}
-            <div className="gradient-card rounded-2xl p-6 md:p-8 border border-border shadow-card">
-              <SkillInputForm onAnalyze={handleAnalyze} isLoading={isLoading} onFormChange={(skills, role) => { setFormSkills(skills); setFormRole(role); }} />
+            <div className="relative overflow-hidden rounded-[2rem] p-5 md:p-8 border border-white/10 bg-[linear-gradient(180deg,rgba(12,20,42,0.82)_0%,rgba(8,14,30,0.86)_100%)] backdrop-blur-xl shadow-[0_30px_80px_-28px_rgba(0,0,0,0.75)]">
+              <div className="pointer-events-none absolute -left-24 top-10 h-52 w-52 rounded-full bg-primary/15 blur-3xl" />
+              <div className="pointer-events-none absolute -right-24 bottom-0 h-60 w-60 rounded-full bg-[#8b5cf6]/15 blur-3xl" />
+              <div className="relative">
+                <SkillInputForm onAnalyze={handleAnalyze} isLoading={isLoading} onFormChange={(skills, role) => { setFormSkills(skills); setFormRole(role); }} />
+              </div>
             </div>
 
             {/* Skill Recommendations */}

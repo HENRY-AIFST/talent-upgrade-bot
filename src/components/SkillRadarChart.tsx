@@ -1,4 +1,4 @@
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from "recharts";
 import { TargetSkill } from "@/types/analysis";
 
 interface SkillRadarChartProps {
@@ -29,9 +29,20 @@ const SkillRadarChart = ({ targetSkills }: SkillRadarChartProps) => {
   }));
 
   return (
-    <div className="w-full h-[380px]">
+    <div className="w-full space-y-3">
+      <div className="flex items-center justify-center gap-3 text-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2dd4bf]/35 bg-[#2dd4bf]/10 px-2.5 py-1 text-[#8ff8ea]">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#2dd4bf]" />
+          Your Level
+        </span>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f4b84a]/35 bg-[#f4b84a]/10 px-2.5 py-1 text-[#ffd48a]">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#f4b84a]" />
+          Required Level
+        </span>
+      </div>
+      <div className="h-[340px] w-full">
       <ResponsiveContainer>
-        <RadarChart data={data} cx="50%" cy="50%" outerRadius="72%">
+        <RadarChart data={data} cx="50%" cy="52%" outerRadius="68%">
           <defs>
             <linearGradient id="radarCurrentGrad" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="hsl(174, 72%, 55%)" stopOpacity={0.35} />
@@ -71,13 +82,9 @@ const SkillRadarChart = ({ targetSkills }: SkillRadarChartProps) => {
             strokeDasharray="5 3"
             dot={{ r: 3, fill: "hsl(36, 95%, 60%)", strokeWidth: 0 }}
           />
-          <Legend
-            wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
-            iconType="circle"
-            iconSize={8}
-          />
         </RadarChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 };
