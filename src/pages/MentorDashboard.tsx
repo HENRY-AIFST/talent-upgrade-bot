@@ -64,6 +64,9 @@ const MentorDashboard = () => {
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [newTask, setNewTask] = useState({ title: "", description: "", category: "study", student_id: "", due_date: "" });
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [denyDialogOpen, setDenyDialogOpen] = useState(false);
+  const [denySessionId, setDenySessionId] = useState<string | null>(null);
+  const [denyReason, setDenyReason] = useState("");
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
