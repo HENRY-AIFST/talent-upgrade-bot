@@ -313,15 +313,22 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
                 <div className="space-y-3">
                   <label className="text-xs font-medium text-muted-foreground">Type or select skills below</label>
                   <div className="flex gap-2">
-                    <Input
+                    <AutocompleteInput
                       placeholder="Type a skill and press Enter..."
                       value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      className="bg-secondary border-border text-foreground placeholder:text-muted-foreground"
+                      onChange={setSkillInput}
+                      suggestions={ALL_SKILLS.filter(s => !skills.includes(s))}
+                      onSelect={(val) => {
+                        if (val && !skills.includes(val)) {
+                          setSkills(prev => [...prev, val]);
+                          setSkillInput("");
+                        }
+                      }}
+                      icon={<Search className="h-4 w-4" />}
                     />
                     <Button onClick={addSkill} size="icon" variant="outline" className="border-primary text-primary hover:bg-primary/10">
                       <Plus className="h-4 w-4" />
+                    </Button>
                     </Button>
                   </div>
                 </div>
