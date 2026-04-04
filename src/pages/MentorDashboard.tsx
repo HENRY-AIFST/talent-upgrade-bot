@@ -99,20 +99,33 @@ const MentorDashboard = () => {
     setSessions((data as BookingSession[]) || []);
   };
 
-  const handleSessionAction = async (sessionId: string, action: "approved" | "rejected") => {
-    const meetLink = action === "approved"
-      ? `https://meet.google.com/${crypto.randomUUID().slice(0, 3)}-${crypto.randomUUID().slice(0, 4)}-${crypto.randomUUID().slice(0, 3)}`
-      : null;
-    
+  const handleApproveSession = async (sessionId: string) => {
+    const meetLink = `https://meet.google.com/${crypto.randomUUID().slice(0, 3)}-${crypto.randomUUID().slice(0, 4)}-${crypto.randomUUID().slice(0, 3)}`;
     const { error } = await supabase
       .from("booking_sessions")
-      .update({ status: action, meet_link: meetLink })
+      .update({ status: "approved", meet_link: meetLink })
       .eq("id", sessionId);
-    
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: action === "approved" ? "Session approved! Meet link generated." : "Session rejected." });
+      toast({ title: "Session approved! Meet link generated." });
+      fetchSessions();
+    }
+  };
+
+  const handleDenySession = async () => {
+    if (!denySessionId || !denyReason.trim()) return;
+    const { error } = await supabase
+      .from("booking_sessions")
+      .update({ status: "denied", denial_reason: denyReason.trim() })
+      .eq("id", denySessionId);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Session denied." });
+      setDenyDialogOpen(false);
+      setDenySessionId(null);
+      setDenyReason("");
       fetchSessions();
     }
   };
