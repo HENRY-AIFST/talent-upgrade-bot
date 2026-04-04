@@ -167,7 +167,7 @@ const ClientDashboard = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved": return <Badge className="bg-primary/20 text-primary border-0"><CheckCircle2 className="h-3 w-3 mr-1" /> Approved</Badge>;
-      case "rejected": return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" /> Rejected</Badge>;
+      case "rejected": case "denied": return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" /> Denied</Badge>;
       default: return <Badge variant="secondary"><CircleDot className="h-3 w-3 mr-1" /> Pending</Badge>;
     }
   };
