@@ -120,14 +120,14 @@ const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
         </motion.div>
 
         {/* ── Skills Chart ── */}
-        <motion.div {...stagger(3)} className="md:col-span-1 glass-card rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-4">
+        <motion.div {...stagger(3)} className="md:col-span-1 glass-card rounded-2xl p-5 md:p-6 min-h-[470px]">
+          <div className="flex items-center justify-between gap-2 mb-3">
             <h3 className="font-display font-semibold text-foreground text-sm">Skills Comparison</h3>
-            <div className="flex gap-1 p-1 bg-secondary/60 rounded-lg">
+            <div className="flex gap-1 p-1 bg-secondary/60 rounded-lg border border-border/60">
               <button
                 onClick={() => setChartType("bar")}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                  chartType === "bar" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  chartType === "bar" ? "bg-card text-foreground shadow-sm border border-border/60" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Bar
@@ -135,7 +135,7 @@ const AnalysisResults = ({ result, onReset }: AnalysisResultsProps) => {
               <button
                 onClick={() => setChartType("radar")}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
-                  chartType === "radar" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  chartType === "radar" ? "bg-card text-foreground shadow-sm border border-border/60" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Radar
