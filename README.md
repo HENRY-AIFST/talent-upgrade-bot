@@ -1,6 +1,6 @@
 # Welcome to your Lovable project
 
-## Project info
+3 Project info
 
 **URL**https://talent-upgrade-bot.lovable.app
 ## How can I edit this code?
