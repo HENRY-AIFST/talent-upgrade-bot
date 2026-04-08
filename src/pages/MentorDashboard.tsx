@@ -12,10 +12,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X } from "lucide-react";
+import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X, Clock as ClockIcon } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
 import AuroraBackground from "@/components/AuroraBackground";
+import MentorAvailability from "@/components/MentorAvailability";
+import { useMentorSessionNotifications } from "@/hooks/useSessionNotifications";
 
 interface Student {
   student_id: string;
@@ -68,6 +70,9 @@ const MentorDashboard = () => {
   const [denyDialogOpen, setDenyDialogOpen] = useState(false);
   const [denySessionId, setDenySessionId] = useState<string | null>(null);
   const [denyReason, setDenyReason] = useState("");
+
+  // Real-time notifications for new session requests
+  useMentorSessionNotifications();
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
@@ -258,12 +263,15 @@ const MentorDashboard = () => {
 
       <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10 pt-12">
         <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
+          <TabsList className="grid w-full max-w-2xl grid-cols-5">
             <TabsTrigger value="students" className="gap-1">
               <Users className="h-4 w-4" /> Students
             </TabsTrigger>
             <TabsTrigger value="sessions" className="gap-1">
               <Calendar className="h-4 w-4" /> Sessions
+            </TabsTrigger>
+            <TabsTrigger value="availability" className="gap-1">
+              <ClockIcon className="h-4 w-4" /> Availability
             </TabsTrigger>
             <TabsTrigger value="tasks" className="gap-1">
               <ClipboardList className="h-4 w-4" /> Tasks
@@ -477,6 +485,11 @@ const MentorDashboard = () => {
                 </Card>
               )}
             </div>
+          </TabsContent>
+
+          {/* Availability Tab */}
+          <TabsContent value="availability">
+            <MentorAvailability />
           </TabsContent>
 
           {/* Sessions Tab */}
