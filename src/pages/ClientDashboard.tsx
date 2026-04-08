@@ -71,6 +71,9 @@ const ClientDashboard = () => {
   const [newBooking, setNewBooking] = useState({ mentor_id: "", date: "", time: "", topic: "", company_name: "" });
   const [newCompany, setNewCompany] = useState({ company_name: "", target_role: "" });
 
+  // Real-time notifications for session approvals/denials
+  useSessionNotifications();
+
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
     fetchAll();
