@@ -12,10 +12,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X } from "lucide-react";
+import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X, Clock as ClockIcon } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
 import AuroraBackground from "@/components/AuroraBackground";
+import MentorAvailability from "@/components/MentorAvailability";
+import { useMentorSessionNotifications } from "@/hooks/useSessionNotifications";
 
 interface Student {
   student_id: string;
