@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
 
     const { user_id, password } = await req.json();
 
-    const { data, error } = await adminClient.auth.admin.updateUser(user_id, { password });
+    const { data, error } = await adminClient.auth.admin.updateUser(user_id, { password, email_confirm: true });
     if (error) throw error;
 
     return new Response(JSON.stringify({ success: true }), {
