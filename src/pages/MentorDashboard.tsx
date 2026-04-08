@@ -487,6 +487,11 @@ const MentorDashboard = () => {
             </div>
           </TabsContent>
 
+          {/* Availability Tab */}
+          <TabsContent value="availability">
+            <MentorAvailability />
+          </TabsContent>
+
           {/* Sessions Tab */}
           <TabsContent value="sessions" className="space-y-4">
             <div className="space-y-3">
