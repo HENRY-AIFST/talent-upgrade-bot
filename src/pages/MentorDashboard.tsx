@@ -71,6 +71,9 @@ const MentorDashboard = () => {
   const [denySessionId, setDenySessionId] = useState<string | null>(null);
   const [denyReason, setDenyReason] = useState("");
 
+  // Real-time notifications for new session requests
+  useMentorSessionNotifications();
+
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
     checkMentorRole();
