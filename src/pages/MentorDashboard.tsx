@@ -263,12 +263,15 @@ const MentorDashboard = () => {
 
       <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10 pt-12">
         <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
+          <TabsList className="grid w-full max-w-2xl grid-cols-5">
             <TabsTrigger value="students" className="gap-1">
               <Users className="h-4 w-4" /> Students
             </TabsTrigger>
             <TabsTrigger value="sessions" className="gap-1">
               <Calendar className="h-4 w-4" /> Sessions
+            </TabsTrigger>
+            <TabsTrigger value="availability" className="gap-1">
+              <ClockIcon className="h-4 w-4" /> Availability
             </TabsTrigger>
             <TabsTrigger value="tasks" className="gap-1">
               <ClipboardList className="h-4 w-4" /> Tasks
