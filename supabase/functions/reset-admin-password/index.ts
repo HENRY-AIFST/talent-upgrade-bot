@@ -17,10 +17,10 @@ Deno.serve(async (req) => {
 
     const { user_id, password } = await req.json();
 
-    const { data, error } = await adminClient.auth.admin.updateUser(user_id, { password, email_confirm: true });
+    const { data: { user }, error } = await adminClient.auth.admin.updateUserById(user_id, { password });
     if (error) throw error;
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, email: user?.email }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
