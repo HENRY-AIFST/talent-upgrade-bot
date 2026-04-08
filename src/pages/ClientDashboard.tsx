@@ -19,6 +19,7 @@ import {
 import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
 import AuroraBackground from "@/components/AuroraBackground";
+import { useSessionNotifications } from "@/hooks/useSessionNotifications";
 
 interface Mentor {
   user_id: string;
