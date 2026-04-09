@@ -76,7 +76,7 @@ const PlanForm = ({ companyName, setCompanyName, targetRole, setTargetRole, tota
       <div>
         <label className="text-sm font-medium text-foreground mb-2 block">Preparation Duration</label>
         <div className="flex gap-2">
-          {[15, 30, 45, 60, 90].map((d) => (
+          {[15, 30, 45, 60, 90, 180, 270, 450].map((d) => (
             <button
               key={d}
               onClick={() => setTotalDays(d)}
