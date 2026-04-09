@@ -1,0 +1,124 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="256" y1="48" x2="256" y2="432" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B1735"/>
+      <stop offset="0.55" stop-color="#0A2246"/>
+      <stop offset="1" stop-color="#071327"/>
+    </linearGradient>
+    <linearGradient id="deckTop" x1="74" y1="303" x2="438" y2="303" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9FB9D8"/>
+      <stop offset="0.5" stop-color="#D7E6F8"/>
+      <stop offset="1" stop-color="#9FB9D8"/>
+    </linearGradient>
+    <linearGradient id="deckFace" x1="74" y1="306" x2="438" y2="334" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1C2E4D"/>
+      <stop offset="0.5" stop-color="#2B446E"/>
+      <stop offset="1" stop-color="#1C2E4D"/>
+    </linearGradient>
+    <linearGradient id="tower" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C9D8ED"/>
+      <stop offset="1" stop-color="#6E84A4"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(362 144) rotate(90) scale(58)">
+      <stop offset="0" stop-color="#BFD8FF" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#A8C8FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cableGlowLeft" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(192 236) rotate(90) scale(34)">
+      <stop offset="0" stop-color="#BFE7FF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#BFE7FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cableGlowRight" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(320 214) rotate(90) scale(34)">
+      <stop offset="0" stop-color="#BFE7FF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#BFE7FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="hazeLeft" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(165 284) rotate(90) scale(54)">
+      <stop offset="0" stop-color="#FFD89D" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#FFD89D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="hazeRight" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(346 278) rotate(90) scale(58)">
+      <stop offset="0" stop-color="#FFD89D" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FFD89D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cableLightWarm" x1="112" y1="156" x2="398" y2="306" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE5A3"/>
+      <stop offset="0.5" stop-color="#FFD079"/>
+      <stop offset="1" stop-color="#FFB85E"/>
+    </linearGradient>
+    <linearGradient id="cableLightCool" x1="112" y1="156" x2="398" y2="306" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8FB4FF"/>
+      <stop offset="1" stop-color="#7AA7FF"/>
+    </linearGradient>
+    <filter id="softGlow" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" rx="256" fill="url(#sky)"/>
+  <circle cx="362" cy="144" r="58" fill="url(#moonGlow)"/>
+  <circle cx="192" cy="236" r="34" fill="url(#cableGlowLeft)"/>
+  <circle cx="320" cy="214" r="34" fill="url(#cableGlowRight)"/>
+  <circle cx="165" cy="284" r="54" fill="url(#hazeLeft)"/>
+  <circle cx="346" cy="278" r="58" fill="url(#hazeRight)"/>
+
+  <ellipse cx="256" cy="371" rx="214" ry="46" fill="#08152D"/>
+
+  <rect x="236" y="132" width="12" height="168" rx="4" fill="url(#tower)"/>
+  <rect x="264" y="132" width="12" height="168" rx="4" fill="url(#tower)"/>
+
+  <rect x="236" y="132" width="12" height="168" rx="4" fill="#EEF7FF" fill-opacity="0.12"/>
+  <rect x="264" y="132" width="12" height="168" rx="4" fill="#EEF7FF" fill-opacity="0.12"/>
+
+  <path d="M122 306C162 288 216 202 242 153" stroke="#8FAAD1" stroke-width="4" stroke-linecap="round"/>
+  <path d="M390 306C350 288 296 202 270 153" stroke="#8FAAD1" stroke-width="4" stroke-linecap="round"/>
+
+  <g opacity="0.9" filter="url(#softGlow)">
+    <path d="M122 306C162 288 216 202 242 153" stroke="url(#cableLightCool)" stroke-width="1.3" stroke-linecap="round" stroke-dasharray="1.2 8.2"/>
+    <path d="M390 306C350 288 296 202 270 153" stroke="url(#cableLightWarm)" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="1.8 7.6"/>
+  </g>
+
+  <g opacity="0.9" filter="url(#softGlow)">
+    <circle cx="192" cy="236" r="1.8" fill="#E6F6FF"/>
+    <circle cx="320" cy="214" r="1.8" fill="#E6F6FF"/>
+  </g>
+
+  <g stroke="#7E97BE" stroke-width="2">
+    <line x1="148" y1="300" x2="148" y2="260"/>
+    <line x1="174" y1="302" x2="174" y2="238"/>
+    <line x1="200" y1="304" x2="200" y2="216"/>
+    <line x1="226" y1="305" x2="226" y2="190"/>
+    <line x1="286" y1="305" x2="286" y2="190"/>
+    <line x1="312" y1="304" x2="312" y2="216"/>
+    <line x1="338" y1="302" x2="338" y2="238"/>
+    <line x1="364" y1="300" x2="364" y2="260"/>
+  </g>
+
+  <path d="M74 301H438L426 308H86L74 301Z" fill="url(#deckTop)"/>
+  <path d="M86 308H426L412 330H100L86 308Z" fill="url(#deckFace)"/>
+
+  <path d="M90 305L423 305" stroke="#FFB96A" stroke-width="1.2" stroke-linecap="round" opacity="0.85"/>
+
+  <g opacity="0.95" filter="url(#softGlow)">
+    <circle cx="108" cy="304" r="1.8" fill="#FFE9BF"/>
+    <circle cx="132" cy="304" r="1.7" fill="#FFF2D7"/>
+    <circle cx="156" cy="304" r="1.9" fill="#FFE4AF"/>
+    <circle cx="180" cy="304" r="1.7" fill="#FFF2D7"/>
+    <circle cx="204" cy="304" r="1.9" fill="#FFE4AF"/>
+    <circle cx="228" cy="304" r="1.8" fill="#FFF0CF"/>
+    <circle cx="252" cy="304" r="2" fill="#FFE4AF"/>
+    <circle cx="276" cy="304" r="1.8" fill="#FFF2D7"/>
+    <circle cx="300" cy="304" r="1.9" fill="#FFE4AF"/>
+    <circle cx="324" cy="304" r="1.7" fill="#FFF0CF"/>
+    <circle cx="348" cy="304" r="1.9" fill="#FFE4AF"/>
+    <circle cx="372" cy="304" r="1.8" fill="#FFF2D7"/>
+    <circle cx="396" cy="304" r="1.9" fill="#FFE4AF"/>
+  </g>
+
+  <circle cx="242" cy="130" r="3" fill="#FF6666"/>
+  <circle cx="270" cy="130" r="3" fill="#FF6666"/>
+
+  <rect x="118" y="325" width="20" height="46" rx="3" fill="#162744"/>
+  <rect x="374" y="325" width="20" height="46" rx="3" fill="#162744"/>
+
+  <ellipse cx="256" cy="372" rx="150" ry="16" fill="#FFDDAA" fill-opacity="0.11"/>
+  <ellipse cx="256" cy="378" rx="116" ry="10" fill="#A8C6FF" fill-opacity="0.08"/>
+</svg>
