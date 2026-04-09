@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import PillNav from "@/components/PillNav";
 import ThemeToggle from "@/components/ThemeToggle";
-import logoImg from "@/assets/logo.png";
+import logoImg from "@/assets/akashi-bridge-night.svg";
 
 interface AppLayoutProps {
   children?: ReactNode;
