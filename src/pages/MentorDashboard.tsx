@@ -22,7 +22,6 @@ import { useMentorSessionNotifications } from "@/hooks/useSessionNotifications";
 const TECH_MENTOR_TAGS = [
   "Ex-Google Engineer",
   "Ex-FAANG Mentor",
-  "Startup Founder",
   "Tech Lead",
   "AI/ML Specialist",
   "Backend Architect",

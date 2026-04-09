@@ -21,7 +21,6 @@ const ADMIN_EMAIL = "rahul140706@gmail.com";
 const TECH_MENTOR_TAGS = [
   "Ex-Google Engineer",
   "Ex-FAANG Mentor",
-  "Startup Founder",
   "Tech Lead",
   "AI/ML Specialist",
   "Backend Architect",

@@ -58,6 +58,24 @@ const POPULAR_COMPANIES = [
   "Adobe", "Oracle", "Salesforce", "Uber", "Swiggy", "Zomato"
 ];
 
+const getTodayDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const EMPTY_BOOKING = {
+  mentor_id: "",
+  date: "",
+  timeHour: "",
+  timeMinute: "00",
+  meridiem: "AM" as "AM" | "PM",
+  topic: "",
+  company_name: "",
+};
+
 const ClientDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -68,8 +86,9 @@ const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [bookingDialog, setBookingDialog] = useState(false);
   const [companyDialog, setCompanyDialog] = useState(false);
-  const [newBooking, setNewBooking] = useState({ mentor_id: "", date: "", time: "", topic: "", company_name: "" });
+  const [newBooking, setNewBooking] = useState(EMPTY_BOOKING);
   const [newCompany, setNewCompany] = useState({ company_name: "", target_role: "" });
+  const [todayDate] = useState(getTodayDateString);
 
   // Real-time notifications for session approvals/denials
   useSessionNotifications();
@@ -123,12 +142,40 @@ const ClientDashboard = () => {
   };
 
   const handleBookSession = async () => {
-    if (!user || !newBooking.mentor_id || !newBooking.date || !newBooking.time) return;
+    if (!user || !newBooking.mentor_id || !newBooking.date || !newBooking.timeHour || !newBooking.timeMinute) {
+      toast({ title: "Wrong data", description: "Please fill mentor, date and time fields.", variant: "destructive" });
+      return;
+    }
+
+    const selectedDate = new Date(`${newBooking.date}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      toast({ title: "Wrong data", description: "Date should not be in the past.", variant: "destructive" });
+      return;
+    }
+
+    const hour = Number(newBooking.timeHour);
+    const minute = Number(newBooking.timeMinute);
+    if (!Number.isInteger(hour) || hour < 1 || hour > 12 || !Number.isInteger(minute) || minute < 0 || minute > 59) {
+      toast({ title: "Wrong data", description: "Enter a valid 12-hour time.", variant: "destructive" });
+      return;
+    }
+
+    // User requested booking window 12:00 AM to 12:00 PM.
+    const minuteOfDay = (newBooking.meridiem === "AM" ? (hour % 12) : (hour % 12) + 12) * 60 + minute;
+    if (minuteOfDay < 0 || minuteOfDay > 12 * 60) {
+      toast({ title: "Wrong data", description: "Time must be between 12:00 AM and 12:00 PM.", variant: "destructive" });
+      return;
+    }
+
+    const requestedTime = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} ${newBooking.meridiem}`;
+
     const { error } = await supabase.from("booking_sessions").insert({
       client_id: user.id,
       mentor_id: newBooking.mentor_id,
       requested_date: newBooking.date,
-      requested_time: newBooking.time,
+      requested_time: requestedTime,
       topic: newBooking.topic || null,
       company_name: newBooking.company_name || null,
     });
@@ -136,10 +183,28 @@ const ClientDashboard = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Session requested!", description: "Waiting for mentor approval." });
-      setNewBooking({ mentor_id: "", date: "", time: "", topic: "", company_name: "" });
+      setNewBooking(EMPTY_BOOKING);
       setBookingDialog(false);
       fetchSessions();
     }
+  };
+
+  const handleBookingDateChange = (dateValue: string) => {
+    if (!dateValue) {
+      setNewBooking((prev) => ({ ...prev, date: "" }));
+      return;
+    }
+
+    const selectedDate = new Date(`${dateValue}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      toast({ title: "Wrong data", description: "No past date allowed. Use present or future date.", variant: "destructive" });
+      return;
+    }
+
+    setNewBooking((prev) => ({ ...prev, date: dateValue }));
   };
 
   const handleAddCompany = async () => {
@@ -251,7 +316,7 @@ const ClientDashboard = () => {
                           size="sm"
                           className="mt-3 w-full"
                           onClick={() => {
-                            setNewBooking(prev => ({ ...prev, mentor_id: m.user_id }));
+                            setNewBooking(prev => ({ ...EMPTY_BOOKING, mentor_id: m.user_id, topic: prev.topic, company_name: prev.company_name }));
                             setBookingDialog(true);
                           }}
                         >
@@ -290,9 +355,42 @@ const ClientDashboard = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    <div className="flex gap-3">
-                      <Input type="date" value={newBooking.date} onChange={e => setNewBooking(p => ({ ...p, date: e.target.value }))} />
-                      <Input type="time" value={newBooking.time} onChange={e => setNewBooking(p => ({ ...p, time: e.target.value }))} />
+                    <div className="flex gap-3 items-center">
+                      <Input type="date" min={todayDate} value={newBooking.date} onChange={e => handleBookingDateChange(e.target.value)} />
+                      <div className="flex-1 flex gap-2">
+                        <Input
+                          type="number"
+                          min={1}
+                          max={12}
+                          placeholder="HH"
+                          value={newBooking.timeHour}
+                          onChange={(e) => setNewBooking(p => ({ ...p, timeHour: e.target.value }))}
+                        />
+                        <Input
+                          type="number"
+                          min={0}
+                          max={59}
+                          placeholder="MM"
+                          value={newBooking.timeMinute}
+                          onChange={(e) => setNewBooking(p => ({ ...p, timeMinute: e.target.value }))}
+                        />
+                        <div className="flex rounded-md border border-border overflow-hidden">
+                          <button
+                            type="button"
+                            onClick={() => setNewBooking(p => ({ ...p, meridiem: "AM" }))}
+                            className={`px-3 text-xs font-semibold ${newBooking.meridiem === "AM" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground"}`}
+                          >
+                            AM
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setNewBooking(p => ({ ...p, meridiem: "PM" }))}
+                            className={`px-3 text-xs font-semibold border-l border-border ${newBooking.meridiem === "PM" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground"}`}
+                          >
+                            PM
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     <Input placeholder="Topic (e.g. DSA prep for Google)" value={newBooking.topic} onChange={e => setNewBooking(p => ({ ...p, topic: e.target.value }))} />
                     <Select value={newBooking.company_name} onValueChange={v => setNewBooking(p => ({ ...p, company_name: v }))}>
@@ -303,7 +401,8 @@ const ClientDashboard = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    <Button onClick={handleBookSession} className="w-full" disabled={!newBooking.mentor_id || !newBooking.date || !newBooking.time}>
+                    <p className="text-xs text-muted-foreground">Allowed booking time: 12:00 AM to 12:00 PM.</p>
+                    <Button onClick={handleBookSession} className="w-full" disabled={!newBooking.mentor_id || !newBooking.date || !newBooking.timeHour || !newBooking.timeMinute}>
                       Request Session
                     </Button>
                   </div>
