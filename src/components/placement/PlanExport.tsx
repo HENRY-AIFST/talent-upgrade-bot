@@ -18,8 +18,11 @@ interface PlanExportProps {
 }
 
 const formatDuration = (days: number) => {
+  if (days === 15 || days === 45) {
+    return `${days} Day`;
+  }
   const months = Math.round(days / 30);
-  return `${months}-Month`;
+  return `${months} ${months === 1 ? "Month" : "Months"}`;
 };
 
 const PlanExport = ({ plan, companyName, targetRole, totalDays }: PlanExportProps) => {

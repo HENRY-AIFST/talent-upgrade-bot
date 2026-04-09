@@ -1,17 +1,31 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Building2, CalendarDays, Loader2, Sparkles } from "lucide-react";
+import AutocompleteInput from "@/components/AutocompleteInput";
+import { Building2, CalendarDays, Loader2, Search, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 const POPULAR_COMPANIES = ["Google", "Amazon", "Microsoft", "Meta", "Apple", "Netflix", "Uber", "Stripe", "Airbnb", "Tesla"];
+const SUPPORTED_ROLES = [
+  "Software Engineer",
+  "AI/ML Engineer",
+  "Agentic AI Engineer",
+  "Backend Engineer",
+  "Full-Stack Engineer",
+  "AI Infrastructure Engineer",
+  "Founder",
+  "Technical Founder",
+  "Product Founder",
+];
 const DURATION_OPTIONS = [
-  { months: 1, days: 30 },
-  { months: 3, days: 90 },
-  { months: 6, days: 180 },
-  { months: 9, days: 270 },
-  { months: 12, days: 360 },
-  { months: 15, days: 450 },
+  { label: "15 days", days: 15 },
+  { label: "1 month", days: 30 },
+  { label: "45 days", days: 45 },
+  { label: "3 months", days: 90 },
+  { label: "6 months", days: 180 },
+  { label: "9 months", days: 270 },
+  { label: "12 months", days: 360 },
+  { label: "15 months", days: 450 },
 ];
 
 interface PlanFormProps {
@@ -73,20 +87,25 @@ const PlanForm = ({ companyName, setCompanyName, targetRole, setTargetRole, tota
 
       <div>
         <label className="text-sm font-medium text-foreground mb-2 block">Target Role</label>
-        <Input
-          placeholder="e.g. Software Engineer, Data Scientist..."
+        <AutocompleteInput
           value={targetRole}
-          onChange={(e) => setTargetRole(e.target.value)}
-          className="bg-secondary border-border h-11 text-base"
+          onChange={setTargetRole}
+          suggestions={SUPPORTED_ROLES}
+          placeholder="Choose a supported role..."
+          icon={<Search className="h-4 w-4" />}
+          allowFreeform={false}
         />
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Only roles with built-in roadmap data are shown here.
+        </p>
       </div>
 
       <div>
         <label className="text-sm font-medium text-foreground mb-2 block">Preparation Duration</label>
-        <div className="grid grid-cols-3 gap-2">
-          {DURATION_OPTIONS.map(({ months, days }) => (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {DURATION_OPTIONS.map(({ label, days }) => (
             <button
-              key={months}
+              key={days}
               onClick={() => setTotalDays(days)}
               className={`flex-1 py-2.5 text-sm rounded-xl border transition-all duration-200 ${
                 totalDays === days
@@ -94,7 +113,7 @@ const PlanForm = ({ companyName, setCompanyName, targetRole, setTargetRole, tota
                   : "border-border text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
-              {months}m
+              {label}
             </button>
           ))}
         </div>

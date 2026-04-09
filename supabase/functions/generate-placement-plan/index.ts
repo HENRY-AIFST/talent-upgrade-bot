@@ -114,6 +114,55 @@ Targets: Senior level or clear path, $150K-$300K+ TC (FAANG), known expert in te
 
 Company-specific prep: Amazon (Java + DynamoDB), Google (Go + Spanner), Meta (PHP/Hack + TAO), Netflix (Java + Spring), Uber (Go + PostgreSQL)`,
 
+  "founder": `
+FOUNDER / STARTUP FOUNDER ROADMAP (Target: Technical founders, product founders, startup operators):
+
+DAY 1-15 (Founding Clarity Sprint):
+- Day 1: Define user pain, thesis, and target customer
+- Day 2: Write founder narrative and problem statement
+- Day 3: Validate market size and competition
+- Day 4: Pick the first 1-2 user journeys
+- Day 5: Draft MVP scope and non-goals
+- Day 6: Build customer interview script
+- Day 7: CHECKPOINT: 5 customer interviews completed
+- Day 8: Build landing page and waitlist
+- Day 9: Pricing hypotheses and business model
+- Day 10: Define success metrics and retention signals
+- Day 11: Pick stack for speed and maintainability
+- Day 12: Create product roadmap by priority layer
+- Day 13: Draft outreach list of 50 prospects
+- Day 14: Founder weekly operating rhythm
+- Day 15: CHECKPOINT: First public MVP plan
+
+MONTH 1 — Customer Discovery Layer:
+Week 1: Problem interviews, persona definition, core pains
+Week 2: Competitive analysis, positioning, differentiation
+Week 3: MVP design, scope cuts, feature prioritization
+Week 4: Launch waitlist, collect first signals, iterate
+Priority Layer 1: User pain and urgency
+Priority Layer 2: Product market fit signals
+Priority Layer 3: Technical feasibility and speed
+
+MONTHS 2-3 — Build and Validate Layer:
+Month 2: Build MVP, onboarding, analytics, core workflows
+Month 3: Test with early adopters, iterate weekly, track retention
+Must know: Basic hiring plan, cash runway, legal/company setup, support process, launch metrics
+
+MONTHS 4-6 — Growth and Team Layer:
+Month 4: Growth loops, referrals, content, partnerships
+Month 5: First hire plan, role definitions, onboarding docs
+Month 6: Fundraising narrative, investor deck, metrics review
+Priority Layer 4: Team leverage and execution
+Priority Layer 5: Revenue and distribution
+
+MONTHS 7-12 — Scaling Layer:
+Customer success, systemization, hiring, product analytics, financial planning, fundraising or profitability path
+Targets: repeatable acquisition, clear roadmap, strong founder story, strong operating cadence
+
+MONTHS 13-15 — Leadership Layer:
+Lead team, refine company direction, manage key hires, partnerships, strategy, and scale decisions
+Targets: sustainable company direction, strong founder brand, clear next-stage growth plan`,
+
   "ai/ml engineer": `
 AI/ML ENGINEER ROADMAP (Target: NVIDIA, Google, Meta, Amazon, Apple, Microsoft, OpenAI, DeepMind, Anthropic):
 
@@ -167,6 +216,13 @@ Month 3: Production ML Systems
 - Week 12: Application Sprint (Apply 20+ roles, Tailor portfolio, Network with ML engineers)
 Milestone Projects: Fine-tuned LLM, RAG app with vector DB, Real-time ML service, Kaggle silver notebook
 Targets: LLM fine-tuning experience, MLOps pipeline, 10+ ML projects, Applying to AI roles
+
+Priority Layers:
+Layer 1: Math, data handling, and classical ML
+Layer 2: Deep learning training, debugging, and evaluation
+Layer 3: LLMs, transformers, and model adaptation
+Layer 4: MLOps, deployment, and monitoring
+Layer 5: Interview readiness and specialization
 
 MONTHS 4-6 — AI Engineer Level (Specialization):
 Track A: LLM/Generative AI - Pre-training fundamentals, tokenizer design (BPE, SentencePiece), scaling laws, inference optimization (quantization, vLLM, TensorRT-LLM), speculative decoding, KV cache, multi-GPU inference

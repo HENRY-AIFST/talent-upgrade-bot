@@ -12,12 +12,25 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X, Clock as ClockIcon } from "lucide-react";
+import { ArrowLeft, Users, ClipboardList, TrendingUp, Plus, CheckCircle2, Circle, Trash2, Video, Calendar, Check, X, Clock as ClockIcon, BadgeCheck } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
 import AuroraBackground from "@/components/AuroraBackground";
 import MentorAvailability from "@/components/MentorAvailability";
 import { useMentorSessionNotifications } from "@/hooks/useSessionNotifications";
+
+const TECH_MENTOR_TAGS = [
+  "Ex-Google Engineer",
+  "Ex-FAANG Mentor",
+  "Startup Founder",
+  "Tech Lead",
+  "AI/ML Specialist",
+  "Backend Architect",
+  "Frontend Expert",
+  "DevOps Specialist",
+  "Cloud Engineer",
+  "Product Engineering Mentor",
+];
 
 interface Student {
   student_id: string;
@@ -55,6 +68,18 @@ interface BookingSession {
   created_at: string;
 }
 
+interface MentorProfileChangeRequest {
+  id: string;
+  requested_display_name: string;
+  requested_tag: string;
+  requested_title: string | null;
+  requested_company: string | null;
+  note: string | null;
+  status: "pending" | "approved" | "rejected";
+  rejection_reason: string | null;
+  created_at: string;
+}
+
 const MentorDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -70,6 +95,15 @@ const MentorDashboard = () => {
   const [denyDialogOpen, setDenyDialogOpen] = useState(false);
   const [denySessionId, setDenySessionId] = useState<string | null>(null);
   const [denyReason, setDenyReason] = useState("");
+  const [mentorProfileForm, setMentorProfileForm] = useState({
+    requestedDisplayName: "",
+    requestedTag: "",
+    requestedTitle: "",
+    requestedCompany: "",
+    note: "",
+  });
+  const [profileRequests, setProfileRequests] = useState<MentorProfileChangeRequest[]>([]);
+  const [submittingProfileRequest, setSubmittingProfileRequest] = useState(false);
 
   // Real-time notifications for new session requests
   useMentorSessionNotifications();
@@ -90,9 +124,78 @@ const MentorDashboard = () => {
     
     setIsMentor(!!data);
     if (data) {
-      await Promise.all([fetchStudents(), fetchTasks(), fetchSessions()]);
+      await Promise.all([fetchStudents(), fetchTasks(), fetchSessions(), fetchMentorProfile(), fetchProfileChangeRequests()]);
     }
     setLoading(false);
+  };
+
+  const fetchMentorProfile = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("profiles")
+      .select("display_name, one_word_description, domain")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    setMentorProfileForm((prev) => ({
+      ...prev,
+      requestedDisplayName: data?.display_name || "",
+      requestedTag: data?.one_word_description || "",
+    }));
+  };
+
+  const fetchProfileChangeRequests = async () => {
+    const { data, error } = await supabase.functions.invoke("manage-mentor", {
+      body: { action: "mentor_list_profile_change_requests" },
+    });
+
+    if (error) {
+      console.error("Failed to load profile requests", error);
+      return;
+    }
+
+    setProfileRequests((data?.requests || []) as MentorProfileChangeRequest[]);
+  };
+
+  const handleSubmitProfileRequest = async () => {
+    if (!mentorProfileForm.requestedDisplayName.trim() || !mentorProfileForm.requestedTag.trim()) {
+      toast({ title: "Missing info", description: "Name and tag are required.", variant: "destructive" });
+      return;
+    }
+
+    setSubmittingProfileRequest(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-mentor", {
+        body: {
+          action: "mentor_submit_profile_change",
+          requestedDisplayName: mentorProfileForm.requestedDisplayName,
+          requestedTag: mentorProfileForm.requestedTag,
+          requestedTitle: mentorProfileForm.requestedTitle,
+          requestedCompany: mentorProfileForm.requestedCompany,
+          note: mentorProfileForm.note,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast({
+        title: "Request sent",
+        description: "Admin has been notified. Your rename/tag update will apply after approval.",
+      });
+
+      setMentorProfileForm((prev) => ({
+        ...prev,
+        requestedTitle: "",
+        requestedCompany: "",
+        note: "",
+      }));
+
+      fetchProfileChangeRequests();
+    } catch (e: any) {
+      toast({ title: "Request failed", description: e.message, variant: "destructive" });
+    } finally {
+      setSubmittingProfileRequest(false);
+    }
   };
 
   const fetchSessions = async () => {
@@ -263,7 +366,7 @@ const MentorDashboard = () => {
 
       <main className="container max-w-6xl mx-auto px-4 py-8 relative z-10 pt-12">
         <Tabs defaultValue="students" className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-5">
+          <TabsList className="grid w-full max-w-3xl grid-cols-6">
             <TabsTrigger value="students" className="gap-1">
               <Users className="h-4 w-4" /> Students
             </TabsTrigger>
@@ -279,7 +382,97 @@ const MentorDashboard = () => {
             <TabsTrigger value="progress" className="gap-1">
               <TrendingUp className="h-4 w-4" /> Progress
             </TabsTrigger>
+            <TabsTrigger value="profile" className="gap-1">
+              <BadgeCheck className="h-4 w-4" /> Profile Tag
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="profile" className="space-y-4">
+            <Card className="border-border">
+              <CardHeader>
+                <CardTitle>Request Rename and Mentor Tag Update</CardTitle>
+                <CardDescription>
+                  Admin approval is required before these changes go live.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input
+                  placeholder="Display name"
+                  value={mentorProfileForm.requestedDisplayName}
+                  onChange={(e) => setMentorProfileForm((prev) => ({ ...prev, requestedDisplayName: e.target.value }))}
+                />
+
+                <Select
+                  value={mentorProfileForm.requestedTag}
+                  onValueChange={(value) => setMentorProfileForm((prev) => ({ ...prev, requestedTag: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose your mentor tag" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TECH_MENTOR_TAGS.map((tag) => (
+                      <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Input
+                    placeholder="Title (e.g. Senior Software Engineer)"
+                    value={mentorProfileForm.requestedTitle}
+                    onChange={(e) => setMentorProfileForm((prev) => ({ ...prev, requestedTitle: e.target.value }))}
+                  />
+                  <Input
+                    placeholder="Company (e.g. Google)"
+                    value={mentorProfileForm.requestedCompany}
+                    onChange={(e) => setMentorProfileForm((prev) => ({ ...prev, requestedCompany: e.target.value }))}
+                  />
+                </div>
+
+                <Textarea
+                  placeholder="Optional note for admin"
+                  value={mentorProfileForm.note}
+                  onChange={(e) => setMentorProfileForm((prev) => ({ ...prev, note: e.target.value }))}
+                  rows={3}
+                />
+
+                <Button onClick={handleSubmitProfileRequest} disabled={submittingProfileRequest}>
+                  {submittingProfileRequest ? "Submitting..." : "Send Request for Verification"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border">
+              <CardHeader>
+                <CardTitle>Recent Requests</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {profileRequests.map((request) => (
+                  <div key={request.id} className="rounded-lg border border-border p-3">
+                    <p className="text-sm font-medium text-foreground">
+                      {request.requested_display_name} · {request.requested_tag}
+                    </p>
+                    {(request.requested_title || request.requested_company) && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {request.requested_title || ""}{request.requested_title && request.requested_company ? " @ " : ""}{request.requested_company || ""}
+                      </p>
+                    )}
+                    <div className="mt-2">
+                      {request.status === "pending" && <Badge variant="secondary">Pending approval</Badge>}
+                      {request.status === "approved" && <Badge className="bg-primary/20 text-primary border-0">Approved</Badge>}
+                      {request.status === "rejected" && <Badge variant="destructive">Rejected</Badge>}
+                    </div>
+                    {request.rejection_reason && (
+                      <p className="text-xs text-destructive mt-1">Reason: {request.rejection_reason}</p>
+                    )}
+                  </div>
+                ))}
+                {profileRequests.length === 0 && (
+                  <p className="text-sm text-muted-foreground">No requests yet.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Students Tab */}
           <TabsContent value="students" className="space-y-4">

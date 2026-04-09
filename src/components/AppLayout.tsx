@@ -46,7 +46,7 @@ const AppLayout = ({ children, initialLoadAnimation = false, rightActions }: App
           <ThemeToggle />
           {rightActions}
         </div>
-        <div className="sm:hidden px-4 mt-3 flex justify-end z-[100]">
+        <div className="sm:hidden px-4 mt-3 flex justify-end relative z-[100]">
           <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/80 backdrop-blur-md px-2 py-1.5">
             <ThemeToggle />
             {rightActions}

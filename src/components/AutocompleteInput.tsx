@@ -10,6 +10,7 @@ interface AutocompleteInputProps {
   className?: string;
   onSelect?: (value: string) => void;
   icon?: React.ReactNode;
+  allowFreeform?: boolean;
 }
 
 const highlightMatch = (text: string, query: string) => {
@@ -33,6 +34,7 @@ const AutocompleteInput = ({
   className,
   onSelect,
   icon,
+  allowFreeform = true,
 }: AutocompleteInputProps) => {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -81,6 +83,9 @@ const AutocompleteInput = ({
     } else if (e.key === "Enter" && activeIndex >= 0) {
       e.preventDefault();
       selectItem(filtered[activeIndex]);
+    } else if (e.key === "Enter" && !allowFreeform && filtered.length > 0) {
+      e.preventDefault();
+      selectItem(filtered[0]);
     } else if (e.key === "Escape") {
       setOpen(false);
     }
@@ -134,7 +139,11 @@ const AutocompleteInput = ({
                 </CommandGroup>
               ) : (
                 <CommandEmpty className="py-3 text-xs text-muted-foreground">
-                  No matches — press Enter to use "<span className="text-foreground font-medium">{value}</span>"
+                  {allowFreeform ? (
+                    <>No matches — press Enter to use "<span className="text-foreground font-medium">{value}</span>"</>
+                  ) : (
+                    <>No supported role matches</>
+                  )}
                 </CommandEmpty>
               )}
             </CommandList>

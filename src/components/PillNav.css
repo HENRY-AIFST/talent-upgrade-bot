@@ -1,6 +1,6 @@
 .pill-nav-container {
   position: relative;
-  z-index: 99;
+  z-index: 1100;
   display: flex;
   justify-content: center;
   padding-top: 1em;
@@ -217,7 +217,7 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  z-index: 997;
+  z-index: 1098;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease;
@@ -229,15 +229,15 @@
 }
 
 .mobile-menu-popover {
-  position: absolute;
-  top: 3em;
+  position: fixed;
+  top: 5.25rem;
   left: 1rem;
   right: 1rem;
-  background: hsl(var(--card));
+  background: hsl(var(--card) / 0.98);
   border: 1px solid hsl(var(--border));
   border-radius: 27px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  z-index: 998;
+  z-index: 1099;
   opacity: 0;
   transform-origin: top center;
   visibility: hidden;

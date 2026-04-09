@@ -41,8 +41,11 @@ interface PlacementPlannerProps {
 }
 
 const formatDuration = (days: number) => {
+  if (days === 15 || days === 45) {
+    return `${days} days`;
+  }
   const months = Math.round(days / 30);
-  return `${months}-month`;
+  return `${months} month${months === 1 ? "" : "s"}`;
 };
 
 const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {

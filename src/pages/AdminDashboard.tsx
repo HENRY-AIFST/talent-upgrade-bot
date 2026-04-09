@@ -9,14 +9,27 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Shield, UserPlus, Users, Loader2, Trash2, Mail, Lock, User, Briefcase,
-  Calendar, Video, Check, X, Clock, CheckCircle2, XCircle, CircleDot
+  Shield, UserPlus, Users, Loader2, Mail, Lock, User, Briefcase,
+  Calendar, Video, CheckCircle2, XCircle, CircleDot, Save, UserX, Check, X
 } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import Particles from "@/components/Particles";
 
 const ADMIN_EMAIL = "rahul140706@gmail.com";
+const TECH_MENTOR_TAGS = [
+  "Ex-Google Engineer",
+  "Ex-FAANG Mentor",
+  "Startup Founder",
+  "Tech Lead",
+  "AI/ML Specialist",
+  "Backend Architect",
+  "Frontend Expert",
+  "DevOps Specialist",
+  "Cloud Engineer",
+  "Product Engineering Mentor",
+];
 
 interface MentorProfile {
   user_id: string;
@@ -41,6 +54,19 @@ interface SessionItem {
   created_at: string;
 }
 
+interface MentorChangeRequest {
+  id: string;
+  mentor_id: string;
+  requested_display_name: string;
+  requested_tag: string;
+  requested_title: string | null;
+  requested_company: string | null;
+  note: string | null;
+  status: "pending" | "approved" | "rejected";
+  rejection_reason: string | null;
+  created_at: string;
+}
+
 const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -50,6 +76,13 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "", description: "" });
+  const [mentorEdits, setMentorEdits] = useState<Record<string, { display_name: string; one_word_description: string; domain: string }>>({});
+  const [savingMentorId, setSavingMentorId] = useState<string | null>(null);
+  const [dismissingMentorId, setDismissingMentorId] = useState<string | null>(null);
+  const [requests, setRequests] = useState<MentorChangeRequest[]>([]);
+  const [requestProfiles, setRequestProfiles] = useState<Record<string, MentorProfile>>({});
+  const [reviewingRequestId, setReviewingRequestId] = useState<string | null>(null);
+  const [rejectionReasonByRequest, setRejectionReasonByRequest] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
@@ -58,7 +91,7 @@ const AdminDashboard = () => {
   }, [user]);
 
   const fetchData = async () => {
-    await Promise.all([fetchMentors(), fetchSessions()]);
+    await Promise.all([fetchMentors(), fetchSessions(), fetchTagRequests()]);
     setLoading(false);
   };
 
@@ -73,7 +106,104 @@ const AdminDashboard = () => {
       .from("profiles")
       .select("user_id, display_name, one_word_description, domain, bio")
       .in("user_id", ids);
-    setMentors((profiles as MentorProfile[]) || []);
+    const mentorProfiles = (profiles as MentorProfile[]) || [];
+    setMentors(mentorProfiles);
+    setMentorEdits(
+      mentorProfiles.reduce((acc, mentor) => {
+        acc[mentor.user_id] = {
+          display_name: mentor.display_name || "",
+          one_word_description: mentor.one_word_description || "",
+          domain: mentor.domain || "",
+        };
+        return acc;
+      }, {} as Record<string, { display_name: string; one_word_description: string; domain: string }>),
+    );
+  };
+
+  const fetchTagRequests = async () => {
+    const { data, error } = await supabase.functions.invoke("manage-mentor", {
+      body: { action: "admin_list_profile_change_requests" },
+    });
+
+    if (error) {
+      console.error("Failed to load mentor requests", error);
+      return;
+    }
+
+    const requestRows = (data?.requests || []) as MentorChangeRequest[];
+    const profiles = ((data?.profiles || []) as MentorProfile[]).reduce((acc, p) => {
+      acc[p.user_id] = p;
+      return acc;
+    }, {} as Record<string, MentorProfile>);
+
+    setRequests(requestRows);
+    setRequestProfiles(profiles);
+  };
+
+  const handleSaveMentor = async (mentorId: string) => {
+    const edit = mentorEdits[mentorId];
+    if (!edit) return;
+    setSavingMentorId(mentorId);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-mentor", {
+        body: {
+          action: "admin_update_mentor_profile",
+          mentorId,
+          displayName: edit.display_name,
+          tag: edit.one_word_description,
+          domain: edit.domain,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "Mentor updated", description: "Profile, tag, and title/company were updated." });
+      fetchMentors();
+    } catch (e: any) {
+      toast({ title: "Update failed", description: e.message, variant: "destructive" });
+    } finally {
+      setSavingMentorId(null);
+    }
+  };
+
+  const handleDismissMentor = async (mentorId: string) => {
+    setDismissingMentorId(mentorId);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-mentor", {
+        body: { action: "admin_dismiss_mentor", mentorId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "Mentor dismissed", description: "Mentor access has been removed." });
+      fetchMentors();
+      fetchTagRequests();
+    } catch (e: any) {
+      toast({ title: "Dismiss failed", description: e.message, variant: "destructive" });
+    } finally {
+      setDismissingMentorId(null);
+    }
+  };
+
+  const handleReviewRequest = async (requestId: string, decision: "approved" | "rejected") => {
+    setReviewingRequestId(requestId);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-mentor", {
+        body: {
+          action: "admin_review_profile_change_request",
+          requestId,
+          decision,
+          rejectionReason: decision === "rejected" ? rejectionReasonByRequest[requestId] || "" : undefined,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: `Request ${decision}`, description: "Mentor has been notified." });
+      fetchMentors();
+      fetchTagRequests();
+    } catch (e: any) {
+      toast({ title: "Review failed", description: e.message, variant: "destructive" });
+    } finally {
+      setReviewingRequestId(null);
+    }
   };
 
   const fetchSessions = async () => {
@@ -151,9 +281,10 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="add-mentor" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="add-mentor" className="gap-1"><UserPlus className="h-4 w-4" /> Add Mentor</TabsTrigger>
             <TabsTrigger value="mentors" className="gap-1"><Users className="h-4 w-4" /> Mentors</TabsTrigger>
+            <TabsTrigger value="requests" className="gap-1"><CheckCircle2 className="h-4 w-4" /> Tag Requests</TabsTrigger>
             <TabsTrigger value="sessions" className="gap-1"><Calendar className="h-4 w-4" /> All Sessions</TabsTrigger>
           </TabsList>
 
@@ -196,7 +327,7 @@ const AdminDashboard = () => {
               {mentors.map(m => (
                 <Card key={m.user_id} className="border-border hover:shadow-md transition-shadow">
                   <CardContent className="p-5">
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 mb-4">
                       <Avatar className="h-12 w-12">
                         <AvatarFallback className="bg-primary/10 text-primary font-semibold">{getInitials(m.display_name)}</AvatarFallback>
                       </Avatar>
@@ -206,12 +337,148 @@ const AdminDashboard = () => {
                         {m.domain && <p className="text-xs text-muted-foreground mt-1">{m.domain}</p>}
                       </div>
                     </div>
+
+                    <div className="space-y-3">
+                      <Input
+                        value={mentorEdits[m.user_id]?.display_name || ""}
+                        onChange={(e) => setMentorEdits((prev) => ({
+                          ...prev,
+                          [m.user_id]: { ...prev[m.user_id], display_name: e.target.value },
+                        }))}
+                        placeholder="Mentor display name"
+                      />
+                      <Select
+                        value={mentorEdits[m.user_id]?.one_word_description || ""}
+                        onValueChange={(value) => setMentorEdits((prev) => ({
+                          ...prev,
+                          [m.user_id]: { ...prev[m.user_id], one_word_description: value },
+                        }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select mentor tag" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TECH_MENTOR_TAGS.map((tag) => (
+                            <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={mentorEdits[m.user_id]?.domain || ""}
+                        onChange={(e) => setMentorEdits((prev) => ({
+                          ...prev,
+                          [m.user_id]: { ...prev[m.user_id], domain: e.target.value },
+                        }))}
+                        placeholder="Title / company (e.g. Ex Google Engineer)"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => handleSaveMentor(m.user_id)}
+                          disabled={savingMentorId === m.user_id}
+                        >
+                          <Save className="h-4 w-4 mr-1" /> Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="flex-1"
+                          onClick={() => handleDismissMentor(m.user_id)}
+                          disabled={dismissingMentorId === m.user_id}
+                        >
+                          <UserX className="h-4 w-4 mr-1" /> Dismiss
+                        </Button>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
               {mentors.length === 0 && (
                 <Card className="col-span-full">
                   <CardContent className="p-8 text-center text-muted-foreground">No mentors yet. Add one from the "Add Mentor" tab.</CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="requests" className="space-y-4">
+            <div className="space-y-3">
+              {requests.map((request) => {
+                const mentorProfile = requestProfiles[request.mentor_id];
+                return (
+                  <Card key={request.id} className="border-border">
+                    <CardContent className="p-4">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="space-y-1">
+                          <p className="font-medium text-foreground text-sm">
+                            {mentorProfile?.display_name || "Mentor"} requested rename/tag update
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Requested name: {request.requested_display_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Requested tag: {request.requested_tag}
+                          </p>
+                          {(request.requested_title || request.requested_company) && (
+                            <p className="text-xs text-muted-foreground">
+                              Requested title/company: {request.requested_title || ""}{request.requested_title && request.requested_company ? " @ " : ""}{request.requested_company || ""}
+                            </p>
+                          )}
+                          {request.note && <p className="text-xs text-muted-foreground">Note: {request.note}</p>}
+                          <div>
+                            {request.status === "pending" ? (
+                              <Badge variant="secondary">Pending</Badge>
+                            ) : request.status === "approved" ? (
+                              <Badge className="bg-primary/20 text-primary border-0">Approved</Badge>
+                            ) : (
+                              <Badge variant="destructive">Rejected</Badge>
+                            )}
+                            {request.rejection_reason && (
+                              <p className="text-xs text-destructive mt-1">Reason: {request.rejection_reason}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {request.status === "pending" && (
+                          <div className="w-full md:w-[320px] space-y-2">
+                            <Input
+                              value={rejectionReasonByRequest[request.id] || ""}
+                              onChange={(e) => setRejectionReasonByRequest((prev) => ({ ...prev, [request.id]: e.target.value }))}
+                              placeholder="Optional rejection reason"
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => handleReviewRequest(request.id, "approved")}
+                                disabled={reviewingRequestId === request.id}
+                              >
+                                <Check className="h-4 w-4 mr-1" /> Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                className="flex-1"
+                                onClick={() => handleReviewRequest(request.id, "rejected")}
+                                disabled={reviewingRequestId === request.id}
+                              >
+                                <X className="h-4 w-4 mr-1" /> Reject
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+
+              {requests.length === 0 && (
+                <Card>
+                  <CardContent className="p-8 text-center text-muted-foreground">
+                    No profile/tag change requests yet.
+                  </CardContent>
                 </Card>
               )}
             </div>

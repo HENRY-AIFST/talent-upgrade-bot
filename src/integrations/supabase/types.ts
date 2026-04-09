@@ -283,6 +283,54 @@ export type Database = {
         }
         Relationships: []
       }
+      mentor_profile_change_requests: {
+        Row: {
+          created_at: string
+          id: string
+          mentor_id: string
+          note: string | null
+          rejection_reason: string | null
+          requested_company: string | null
+          requested_display_name: string
+          requested_tag: string
+          requested_title: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mentor_id: string
+          note?: string | null
+          rejection_reason?: string | null
+          requested_company?: string | null
+          requested_display_name: string
+          requested_tag: string
+          requested_title?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mentor_id?: string
+          note?: string | null
+          rejection_reason?: string | null
+          requested_company?: string | null
+          requested_display_name?: string
+          requested_tag?: string
+          requested_title?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
