@@ -6,6 +6,11 @@ interface ExistingPlansProps {
   onLoadPlan: (plan: any) => void;
 }
 
+const formatDuration = (days: number) => {
+  const months = Math.round(days / 30);
+  return `${months} month${months === 1 ? "" : "s"}`;
+};
+
 const ExistingPlans = ({ plans, onLoadPlan }: ExistingPlansProps) => {
   if (plans.length === 0) return null;
 
@@ -36,7 +41,7 @@ const ExistingPlans = ({ plans, onLoadPlan }: ExistingPlansProps) => {
                 </div>
                 <div>
                   <p className="font-semibold text-foreground text-sm">{p.company_name}</p>
-                  <p className="text-xs text-muted-foreground">{p.target_role} · {p.total_days} days</p>
+                  <p className="text-xs text-muted-foreground">{p.target_role} · {formatDuration(p.total_days)}</p>
                 </div>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />

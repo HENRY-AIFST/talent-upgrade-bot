@@ -40,6 +40,11 @@ interface PlacementPlannerProps {
   onBack: () => void;
 }
 
+const formatDuration = (days: number) => {
+  const months = Math.round(days / 30);
+  return `${months}-month`;
+};
+
 const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -118,7 +123,7 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
         loadExistingPlans();
       }
 
-      toast({ title: "Plan Generated! 🎉", description: `Your ${totalDays}-day plan for ${companyName} is ready.` });
+      toast({ title: "Plan Generated! 🎉", description: `Your ${formatDuration(totalDays)} plan for ${companyName} is ready.` });
     } catch (e: any) {
       console.error("Plan generation error:", e);
       const msg = e?.message || "Unknown error";

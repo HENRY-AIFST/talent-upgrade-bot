@@ -5,6 +5,14 @@ import { Building2, CalendarDays, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 const POPULAR_COMPANIES = ["Google", "Amazon", "Microsoft", "Meta", "Apple", "Netflix", "Uber", "Stripe", "Airbnb", "Tesla"];
+const DURATION_OPTIONS = [
+  { months: 1, days: 30 },
+  { months: 3, days: 90 },
+  { months: 6, days: 180 },
+  { months: 9, days: 270 },
+  { months: 12, days: 360 },
+  { months: 15, days: 450 },
+];
 
 interface PlanFormProps {
   companyName: string;
@@ -75,18 +83,18 @@ const PlanForm = ({ companyName, setCompanyName, targetRole, setTargetRole, tota
 
       <div>
         <label className="text-sm font-medium text-foreground mb-2 block">Preparation Duration</label>
-        <div className="flex gap-2">
-          {[15, 30, 45, 60, 90, 180, 270, 450].map((d) => (
+        <div className="grid grid-cols-3 gap-2">
+          {DURATION_OPTIONS.map(({ months, days }) => (
             <button
-              key={d}
-              onClick={() => setTotalDays(d)}
+              key={months}
+              onClick={() => setTotalDays(days)}
               className={`flex-1 py-2.5 text-sm rounded-xl border transition-all duration-200 ${
-                totalDays === d
+                totalDays === days
                   ? "border-primary bg-primary/15 text-primary font-semibold shadow-[0_0_12px_-3px_hsl(var(--primary)/0.4)]"
                   : "border-border text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
-              {d}d
+              {months}m
             </button>
           ))}
         </div>

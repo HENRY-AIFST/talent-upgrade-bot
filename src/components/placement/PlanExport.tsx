@@ -17,6 +17,11 @@ interface PlanExportProps {
   totalDays: number;
 }
 
+const formatDuration = (days: number) => {
+  const months = Math.round(days / 30);
+  return `${months}-Month`;
+};
+
 const PlanExport = ({ plan, companyName, targetRole, totalDays }: PlanExportProps) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
@@ -33,7 +38,7 @@ const PlanExport = ({ plan, companyName, targetRole, totalDays }: PlanExportProp
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`${totalDays}-Day Placement Plan`, margin, y);
+    doc.text(`${formatDuration(totalDays)} Placement Plan`, margin, y);
     y += 8;
     doc.text(plan.summary, margin, y, { maxWidth: 170 });
     y += 15;
@@ -77,7 +82,7 @@ const PlanExport = ({ plan, companyName, targetRole, totalDays }: PlanExportProp
 
   const copyPlanText = () => {
     const text = [
-      `${companyName} - ${targetRole} (${totalDays}-Day Plan)`,
+      `${companyName} - ${targetRole} (${formatDuration(totalDays)} Plan)`,
       plan.summary,
       "",
       "PHASES:",

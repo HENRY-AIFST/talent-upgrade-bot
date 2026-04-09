@@ -4,6 +4,21 @@ const corsHeaders = {
 };
 
 const LOVABLE_API_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const planCache = new Map<string, unknown>();
+
+type DailyTask = {
+  day: number;
+  title: string;
+  description: string;
+  category: "study" | "practice" | "mock" | "review";
+  estimatedHours: number;
+};
+
+type PlacementPlan = {
+  summary: string;
+  phases: { name: string; days: string; focus: string }[];
+  dailyTasks: DailyTask[];
+};
 
 // Comprehensive role-specific roadmap data from the placement path document (all months up to 15)
 const ROLE_ROADMAPS: Record<string, string> = {
@@ -424,6 +439,83 @@ function findBestRoadmap(targetRole: string): string {
   return ROLE_ROADMAPS["software engineer"];
 }
 
+function buildCacheKey(companyName: string, targetRole: string, currentSkills: string[] | undefined, days: number): string {
+  const skills = (currentSkills || []).map((s) => s.trim().toLowerCase()).filter(Boolean).sort().join("|");
+  return `${companyName.trim().toLowerCase()}::${targetRole.trim().toLowerCase()}::${days}::${skills}`;
+}
+
+function extractJsonObject(content: string): string {
+  const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start >= 0 && end > start) return cleaned.slice(start, end + 1);
+  return cleaned;
+}
+
+function normalizePlan(plan: PlacementPlan, days: number): PlacementPlan {
+  const normalizedTasks = (plan.dailyTasks || [])
+    .slice(0, days)
+    .map((t, index) => ({
+      day: Number.isFinite(Number(t.day)) ? Number(t.day) : index + 1,
+      title: t.title || `Day ${index + 1} task`,
+      description: t.description || "Complete focused preparation activities for this milestone.",
+      category: ["study", "practice", "mock", "review"].includes(t.category) ? t.category : "study",
+      estimatedHours: Number.isFinite(Number(t.estimatedHours)) ? Number(t.estimatedHours) : 2,
+    }));
+
+  if (normalizedTasks.length < days) {
+    const fallback = buildFallbackPlan(days, "", "").dailyTasks;
+    for (let i = normalizedTasks.length; i < days; i += 1) {
+      const template = fallback[i];
+      normalizedTasks.push({ ...template, day: i + 1 });
+    }
+  }
+
+  return {
+    summary: plan.summary || "A structured preparation plan focused on interview success.",
+    phases: Array.isArray(plan.phases) && plan.phases.length > 0 ? plan.phases : buildFallbackPlan(days, "", "").phases,
+    dailyTasks: normalizedTasks,
+  };
+}
+
+function buildFallbackPlan(days: number, targetRole: string, companyName: string): PlacementPlan {
+  const phaseSize = Math.ceil(days / 5);
+  const phases = [
+    { name: "Foundation", focus: "Core concepts and setup" },
+    { name: "Skill Building", focus: "Daily practice and confidence" },
+    { name: "Application", focus: "Projects and interview patterns" },
+    { name: "Simulation", focus: "Mock interviews and timed drills" },
+    { name: "Final Sprint", focus: "Revision and company prep" },
+  ].map((p, idx) => {
+    const start = idx * phaseSize + 1;
+    const end = Math.min(days, (idx + 1) * phaseSize);
+    return {
+      name: p.name,
+      days: `Day ${start}-${end}`,
+      focus: p.focus,
+    };
+  });
+
+  const categories: DailyTask["category"][] = ["study", "practice", "review", "practice", "mock"];
+  const dailyTasks: DailyTask[] = Array.from({ length: days }, (_, idx) => {
+    const day = idx + 1;
+    const category = categories[idx % categories.length];
+    return {
+      day,
+      title: `${targetRole || "Target role"} prep for ${companyName || "target company"} - Day ${day}`,
+      description: "Study one core topic, solve focused problems, and note learnings for revision.",
+      category,
+      estimatedHours: category === "mock" ? 3 : 2,
+    };
+  });
+
+  return {
+    summary: `A ${days}-day fast-track preparation plan tailored for ${targetRole || "your target role"} at ${companyName || "your target company"}.`,
+    phases,
+    dailyTasks,
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -440,13 +532,21 @@ Deno.serve(async (req) => {
     }
 
     const days = totalDays || 30;
+    const cacheKey = buildCacheKey(companyName, targetRole, currentSkills, days);
+    const cachedPlan = planCache.get(cacheKey);
+    if (cachedPlan) {
+      return new Response(JSON.stringify(cachedPlan), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const roadmapContext = findBestRoadmap(targetRole);
 
-    const prompt = `You are an expert career coach. Create a detailed ${days}-day placement preparation plan for someone targeting "${targetRole}" at "${companyName}".
+    const prompt = `Create a concise, practical ${days}-day placement plan for role "${targetRole}" at "${companyName}".
 
 Current skills: ${currentSkills?.join(", ") || "Not specified"}
 
-USE THE FOLLOWING EXPERT ROADMAP DATA as your primary reference to generate highly specific, actionable daily tasks. Adapt the timeline to fit ${days} days:
+Use this roadmap data as the primary reference. Adapt it to ${days} days:
 
 ${roadmapContext}
 
@@ -480,48 +580,46 @@ Important guidelines:
 - Include mock interviews and behavioral prep (STAR method)
 - Make tasks progressively harder
 - Include certification targets and salary benchmarks where relevant
+- Tasks must be short and clear; keep each description to one line
 - Generate exactly ${days} daily tasks
+- Keep output compact and valid JSON only
 Return ONLY valid JSON, no markdown.`;
 
     const apiKey = Deno.env.get("LOVABLE_API_KEY");
-    const response = await fetch(LOVABLE_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI API error:", response.status, errorText);
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limited. Please try again in a moment." }), {
-          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds in Settings > Workspace > Usage." }), {
-          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      return new Response(JSON.stringify({ error: `AI service unavailable (${response.status}). Please try again.` }), {
-        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    let finalPlan: PlacementPlan;
+    try {
+      const response = await fetch(LOVABLE_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.35,
+        }),
+        signal: AbortSignal.timeout(18000),
       });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`AI API error: ${response.status} ${errorText}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content || "";
+      const jsonContent = extractJsonObject(content);
+      const parsedPlan = JSON.parse(jsonContent) as PlacementPlan;
+      finalPlan = normalizePlan(parsedPlan, days);
+    } catch (generationError) {
+      console.error("Using fallback plan due to generation error:", generationError);
+      finalPlan = buildFallbackPlan(days, targetRole, companyName);
     }
 
-    const data = await response.json();
-    let content = data.choices?.[0]?.message?.content || "";
-    content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+    planCache.set(cacheKey, finalPlan);
 
-    const plan = JSON.parse(content);
-
-    return new Response(JSON.stringify(plan), {
+    return new Response(JSON.stringify(finalPlan), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
