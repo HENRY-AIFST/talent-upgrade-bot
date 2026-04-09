@@ -6,6 +6,7 @@ import { X, Plus, FileText, Target, Sparkles, Loader2, Upload, CheckCircle, Link
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import LinkedInImport from "./LinkedInImport";
 import ATSScoreCard from "./ATSScoreCard";
 import ATSHistory from "./ATSHistory";
@@ -92,6 +93,7 @@ interface SkillInputFormProps {
 }
 
 const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormProps) => {
+  const isMobile = useIsMobile();
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const [targetRole, setTargetRole] = useState("");
@@ -236,6 +238,8 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
     { key: "linkedin" as const, label: "LinkedIn", icon: Linkedin },
   ];
 
+  const visibleSuggestedSkills = isMobile ? SUGGESTED_SKILLS.slice(0, 6) : SUGGESTED_SKILLS;
+
   return (
     <div className="space-y-7">
       {/* Trust Banner */}
@@ -344,7 +348,7 @@ const SkillInputForm = ({ onAnalyze, isLoading, onFormChange }: SkillInputFormPr
                     <span className="text-[10px] px-2 py-1 rounded-full bg-primary/12 border border-primary/30 text-primary font-semibold">Based on Role</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {SUGGESTED_SKILLS.map((s, i) => {
+                    {visibleSuggestedSkills.map((s, i) => {
                       const isSelected = skills.includes(s.name);
                       return (
                         <motion.button
