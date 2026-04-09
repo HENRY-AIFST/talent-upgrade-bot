@@ -120,7 +120,16 @@ const PlacementPlanner = ({ onBack }: PlacementPlannerProps) => {
 
       toast({ title: "Plan Generated! 🎉", description: `Your ${totalDays}-day plan for ${companyName} is ready.` });
     } catch (e: any) {
-      toast({ title: "Generation Failed", description: e.message, variant: "destructive" });
+      console.error("Plan generation error:", e);
+      const msg = e?.message || "Unknown error";
+      const isApiError = msg.includes("404") || msg.includes("API");
+      toast({
+        title: "Plan Generation Failed",
+        description: isApiError
+          ? "The AI service is temporarily unavailable. Please try again in a moment."
+          : `Something went wrong: ${msg}. Please try again.`,
+        variant: "destructive",
+      });
     } finally {
       setIsGenerating(false);
     }

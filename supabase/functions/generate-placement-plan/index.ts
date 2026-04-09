@@ -498,7 +498,21 @@ Return ONLY valid JSON, no markdown.`;
     });
 
     if (!response.ok) {
-      throw new Error(`AI API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error("AI API error:", response.status, errorText);
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limited. Please try again in a moment." }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds in Settings > Workspace > Usage." }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ error: `AI service unavailable (${response.status}). Please try again.` }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const data = await response.json();
@@ -512,8 +526,8 @@ Return ONLY valid JSON, no markdown.`;
     });
   } catch (error) {
     console.error("Plan generation error:", error);
-    return new Response(JSON.stringify({ error: (error as Error).message }), {
-      status: 500,
+    return new Response(JSON.stringify({ error: (error as Error).message || "Plan generation failed. Please try again." }), {
+      status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
