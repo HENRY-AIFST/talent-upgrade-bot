@@ -482,6 +482,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_shared_analysis: {
+        Args: { _share_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          result: Json
+          share_id: string
+          target_role: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "shared_analyses"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -491,7 +508,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "mentor" | "student" | "client"
+      app_role: "mentor" | "student" | "client" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -619,7 +636,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["mentor", "student", "client"],
+      app_role: ["mentor", "student", "client", "admin"],
     },
   },
 } as const
