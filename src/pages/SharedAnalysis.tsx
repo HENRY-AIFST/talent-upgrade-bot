@@ -23,9 +23,7 @@ const SharedAnalysis = () => {
     const fetchShared = async () => {
       if (!shareId) return;
       const { data, error: err } = await supabase
-        .from("shared_analyses")
-        .select("result, target_role")
-        .eq("share_id", shareId)
+        .rpc("get_shared_analysis", { _share_id: shareId })
         .single();
 
       if (err || !data) {
