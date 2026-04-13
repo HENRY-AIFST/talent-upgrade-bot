@@ -283,54 +283,6 @@ export type Database = {
         }
         Relationships: []
       }
-      mentor_profile_change_requests: {
-        Row: {
-          created_at: string
-          id: string
-          mentor_id: string
-          note: string | null
-          rejection_reason: string | null
-          requested_company: string | null
-          requested_display_name: string
-          requested_tag: string
-          requested_title: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          mentor_id: string
-          note?: string | null
-          rejection_reason?: string | null
-          requested_company?: string | null
-          requested_display_name: string
-          requested_tag: string
-          requested_title?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          mentor_id?: string
-          note?: string | null
-          rejection_reason?: string | null
-          requested_company?: string | null
-          requested_display_name?: string
-          requested_tag?: string
-          requested_title?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       notifications: {
         Row: {
           created_at: string
@@ -530,6 +482,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_shared_analysis: {
+        Args: { _share_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          result: Json
+          share_id: string
+          target_role: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "shared_analyses"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -539,7 +508,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "mentor" | "student" | "client"
+      app_role: "mentor" | "student" | "client" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -667,7 +636,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["mentor", "student", "client"],
+      app_role: ["mentor", "student", "client", "admin"],
     },
   },
 } as const
