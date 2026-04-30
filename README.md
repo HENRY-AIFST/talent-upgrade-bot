@@ -2,7 +2,7 @@
 
 3 Project info
 
-**URL**https://talent-upgrade-bot.lovable.app
+**URL**https://skillbridge-your.lovable.app
 ## How can I edit this code?
 
 There are several ways of editing your application.
