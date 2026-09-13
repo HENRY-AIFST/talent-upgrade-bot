@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://skillbridge-your.lovable.app/sitemap.xml
