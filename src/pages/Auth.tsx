@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Compass, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
-import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
@@ -82,20 +81,8 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      <AuroraBackground />
-      <div className="absolute inset-0 z-[1]">
-        <Particles
-          particleColors={["#2dd4bf", "#14b8a6", "#0d9488"]}
-          particleCount={200}
-          particleSpread={10}
-          speed={0.1}
-          particleBaseSize={100}
-          moveParticlesOnHover
-          alphaParticles={false}
-          disableRotation={false}
-          pixelRatio={1}
-        />
-      </div>
+      <AuroraBackground animated={false} />
+
 
       <AppLayout />
 
