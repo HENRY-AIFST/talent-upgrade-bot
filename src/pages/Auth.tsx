@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Compass, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
-import Particles from "@/components/Particles";
 import RotatingText from "@/components/RotatingText";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
